@@ -28,7 +28,7 @@ func AuthMiddleware(srvRoutes map[string]routes.Route, router *mux.Router, sessi
 				srverr.Raise(rw, req, err, http.StatusNotFound)
 				return
 			}
-			// see if the route is in the manually registered routes (if it is not then it is a flutter resource)
+			// see if the route is in the manually registered routes (if it is not then it is a frontend resource)
 			route, ok := srvRoutes[muxroute]
 			if !ok {
 				next.ServeHTTP(rw, req)

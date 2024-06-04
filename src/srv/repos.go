@@ -29,9 +29,8 @@ func (s Server) Repos() repos {
 }
 
 func (s Server) MockRepos() repos {
-	ur := usersmock.NewMockUserRepo()
 	return repos{
-		Users:    ur,
+		Users:    usersmock.NewMockUserRepo(),
 		Sessions: sessionsmock.NewMockSessionRepo(),
 		Media:    mediamock.NewMockMediaRepo(),
 		OsMedia:  media_os_int.NewOsMediaRepo(s.Config.Media),
@@ -39,9 +38,8 @@ func (s Server) MockRepos() repos {
 }
 
 func (s Server) IntegRepos() repos {
-	usersRepo := usersdb.NewMongoUserRepository(s.Config.Mongo)
 	return repos{
-		Users:    usersRepo,
+		Users:    usersdb.NewMongoUserRepository(s.Config.Mongo),
 		Sessions: sessionsdb.NewMongoSessionRepository(s.Config.Mongo),
 		Media:    mediadb.NewMongoMediaRepo(s.Config.Mongo),
 		OsMedia:  media_os_int.NewOsMediaRepo(s.Config.Media),

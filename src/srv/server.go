@@ -9,6 +9,7 @@ import (
 	"golang-web-core/src/util"
 	"log"
 	"net/http"
+	"runtime"
 
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
@@ -62,7 +63,11 @@ func (s *Server) Configure() error {
 	if err != nil {
 		return err
 	}
-	s.PathPrefix("/").Handler(http.FileServer(http.Dir(fmt.Sprintf("%v/resources/frontend", appDir))))
+	frontendDir := "/resources/frontend"
+	if runtime.GOOS == "windows" {
+		frontendDir = "\\resources\\frontend"
+	}
+	s.PathPrefix("/").Handler(http.FileServer(http.Dir(fmt.Sprintf("%v%v", appDir, frontendDir))))
 
 	// register middleware functions
 	s.Use(middlewares.EnableCors)
