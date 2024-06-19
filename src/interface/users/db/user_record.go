@@ -3,6 +3,7 @@ package usersdb
 import (
 	"golang-web-core/src/domain"
 	"net/mail"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -40,7 +41,7 @@ func UserRecordFromDomain(user domain.User) (UserRecord, error) {
 	}
 	return UserRecord{
 		Id:                user.Id,
-		Email:             user.Email,
+		Email:             strings.ToLower(user.Email),
 		Username:          user.Username,
 		EncryptedPassword: string(encryptedPassword),
 		IsAdmin:           user.IsAdmin,
