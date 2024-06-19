@@ -39,10 +39,14 @@ func NewSession(u User, remoteAddr string, expires bool) (Session, error) {
 	if err != nil {
 		return Session{}, err
 	}
+	expiresAt := time.Now().UnixMilli() + util.DaysInMilliseconds(1)
+	if !expires {
+		expiresAt = 0
+	}
 	return Session{
 		Id:         uuid.NewString(),
 		User:       u,
-		ExpiresAt:  time.Now().UnixMilli() + util.DaysInMilliseconds(1),
+		ExpiresAt:  expiresAt,
 		VerifiedIp: host,
 		DoesExpire: expires,
 	}, nil
