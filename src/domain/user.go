@@ -41,8 +41,8 @@ func NewUser(email, username, password string, isAdmin bool) User {
 		Theme:      SystemTheme,
 		ThemeColor: Color{
 			R: 68,
-			B: 138,
-			G: 255,
+			G: 138,
+			B: 255,
 		},
 	}
 }
