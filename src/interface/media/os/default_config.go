@@ -2,7 +2,7 @@ package media_os_int
 
 import (
 	"fmt"
-	"golang-web-core/src/util"
+	"golang-web-core/src/application/util"
 	"runtime"
 )
 

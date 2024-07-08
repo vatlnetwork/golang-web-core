@@ -2,9 +2,9 @@ package users_user_int
 
 import (
 	"encoding/json"
+	"golang-web-core/src/application/srv/application/srverr"
 	"golang-web-core/src/domain"
 	sessions_user_int "golang-web-core/src/interface/sessions/user"
-	"golang-web-core/src/srv/srverr"
 	"io"
 	"net/http"
 )

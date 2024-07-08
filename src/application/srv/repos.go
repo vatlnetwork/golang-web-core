@@ -1,6 +1,7 @@
 package srv
 
 import (
+	"golang-web-core/src/application/srv/cfg"
 	"golang-web-core/src/domain"
 	mediadb "golang-web-core/src/interface/media/db"
 	mediamock "golang-web-core/src/interface/media/mock"
@@ -9,7 +10,6 @@ import (
 	sessionsmock "golang-web-core/src/interface/sessions/mock"
 	usersdb "golang-web-core/src/interface/users/db"
 	usersmock "golang-web-core/src/interface/users/mock"
-	"golang-web-core/src/srv/cfg"
 )
 
 type repos struct {

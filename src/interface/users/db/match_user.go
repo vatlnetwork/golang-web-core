@@ -2,9 +2,9 @@ package usersdb
 
 import (
 	"fmt"
+	"golang-web-core/src/application/srv/application/srverr"
 	"golang-web-core/src/domain"
 	"golang-web-core/src/interface/database/mongo"
-	"golang-web-core/src/srv/srverr"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"

@@ -1,8 +1,8 @@
 package media_user_int
 
 import (
+	"golang-web-core/src/application/srv/application/srverr"
 	sessions_user_int "golang-web-core/src/interface/sessions/user"
-	"golang-web-core/src/srv/srverr"
 	"net/http"
 
 	"github.com/gorilla/mux"

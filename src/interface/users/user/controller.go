@@ -1,9 +1,9 @@
 package users_user_int
 
 import (
+	"golang-web-core/src/application/srv/routes"
 	"golang-web-core/src/domain"
 	media_os_int "golang-web-core/src/interface/media/os"
-	"golang-web-core/src/srv/routes"
 	"net/http"
 )
 

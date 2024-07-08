@@ -2,11 +2,11 @@ package srv
 
 import (
 	"fmt"
+	"golang-web-core/src/application/srv/cfg"
+	"golang-web-core/src/application/srv/middlewares"
+	"golang-web-core/src/application/srv/routes"
+	"golang-web-core/src/application/util"
 	"golang-web-core/src/interface/database/mongo"
-	"golang-web-core/src/srv/cfg"
-	"golang-web-core/src/srv/middlewares"
-	"golang-web-core/src/srv/routes"
-	"golang-web-core/src/util"
 	"log"
 	"net/http"
 	"runtime"

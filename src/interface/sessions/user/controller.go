@@ -2,9 +2,9 @@ package sessions_user_int
 
 import (
 	"encoding/json"
+	"golang-web-core/src/application/srv/application/srverr"
+	"golang-web-core/src/application/srv/routes"
 	"golang-web-core/src/domain"
-	"golang-web-core/src/srv/routes"
-	"golang-web-core/src/srv/srverr"
 	"net/http"
 )
 

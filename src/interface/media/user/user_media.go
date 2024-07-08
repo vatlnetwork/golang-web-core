@@ -2,7 +2,7 @@ package media_user_int
 
 import (
 	"encoding/json"
-	"golang-web-core/src/srv/srverr"
+	"golang-web-core/src/application/srv/application/srverr"
 	"net/http"
 
 	"github.com/gorilla/mux"

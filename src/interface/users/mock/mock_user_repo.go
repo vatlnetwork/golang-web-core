@@ -2,8 +2,8 @@ package usersmock
 
 import (
 	"fmt"
+	"golang-web-core/src/application/srv/application/srverr"
 	"golang-web-core/src/domain"
-	"golang-web-core/src/srv/srverr"
 	"strings"
 
 	"github.com/google/uuid"

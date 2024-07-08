@@ -3,10 +3,10 @@ package middlewares
 import (
 	"context"
 	"fmt"
+	"golang-web-core/src/application/srv/application/srverr"
+	"golang-web-core/src/application/srv/routes"
 	"golang-web-core/src/domain"
 	sessions_user_int "golang-web-core/src/interface/sessions/user"
-	"golang-web-core/src/srv/routes"
-	"golang-web-core/src/srv/srverr"
 	"net/http"
 
 	"github.com/gorilla/mux"

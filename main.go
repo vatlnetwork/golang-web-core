@@ -1,8 +1,8 @@
 package main
 
 import (
-	"golang-web-core/src/srv"
-	"golang-web-core/src/srv/cfg"
+	"golang-web-core/src/application/srv"
+	"golang-web-core/src/application/srv/cfg"
 )
 
 func main() {

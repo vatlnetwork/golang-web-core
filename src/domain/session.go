@@ -2,7 +2,7 @@ package domain
 
 import (
 	"fmt"
-	"golang-web-core/src/util"
+	"golang-web-core/src/application/util"
 	"net"
 	"time"
 
