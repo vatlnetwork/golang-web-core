@@ -1,9 +1,13 @@
 package routes
 
-import "net/http"
+import (
+	"golang-web-core/app/controllers"
+	"net/http"
+)
 
 type Route struct {
-	Pattern string
-	Method  int
-	Handler http.HandlerFunc
+	Pattern    string
+	Method     int
+	Handler    http.HandlerFunc
+	Controller controllers.Controller
 }

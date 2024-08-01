@@ -1,12 +1,14 @@
 package srv
 
 import (
+	"golang-web-core/app/controllers"
 	"golang-web-core/app/routes"
 	"net/http"
 )
 
-func HandleRequest(route routes.Route) http.HandlerFunc {
+func HandleRequest(appController controllers.ApplicationController, route routes.Route) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
+		appController.BeforeAction(route.Controller.BeforeAction(route.Handler))
 	}
 }
 

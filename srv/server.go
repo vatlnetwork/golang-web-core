@@ -3,6 +3,7 @@ package srv
 import (
 	"context"
 	"fmt"
+	"golang-web-core/app/controllers"
 	"golang-web-core/app/routes"
 	"golang-web-core/srv/cfg"
 	"log"
@@ -83,6 +84,7 @@ func (s *Server) Start() error {
 
 func (s *Server) registerRoutes() error {
 	routes := s.Router.Routes()
+	appController := controllers.NewApplicationController(s.Config)
 	for _, route := range routes {
 		_, ok := s.Routes[route.Pattern]
 		if ok {
@@ -90,7 +92,7 @@ func (s *Server) registerRoutes() error {
 		}
 		s.Routes[route.Pattern] = route
 
-		s.Mux.Handle(fmt.Sprintf("%v %v", route.Method, route.Pattern), HandleRequest(route))
+		s.Mux.Handle(fmt.Sprintf("%v %v", route.Method, route.Pattern), HandleRequest(appController, route))
 		s.Mux.Handle(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
 	}
 	return nil
