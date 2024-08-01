@@ -1,9 +1,17 @@
 package routes
 
-import "golang-web-core/srv"
+import "golang-web-core/srv/cfg"
 
-type Routes struct {
-	srv.Config
+type Router struct {
+	config cfg.Config
 }
 
-func (r Routes) Routes() {}
+func NewRouter(c cfg.Config) Router {
+	return Router{
+		config: c,
+	}
+}
+
+func (r Router) Routes() []Route {
+	return []Route{}
+}

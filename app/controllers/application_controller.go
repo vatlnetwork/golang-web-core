@@ -1,18 +1,26 @@
 package controllers
 
 import (
-	"golang-web-core/srv"
+	"golang-web-core/srv/cfg"
 	"net/http"
 )
 
 type ApplicationController struct {
-	srv.Config
+	cfg.Config
 }
 
-func NewApplicationController(config srv.Config) ApplicationController {
+func NewApplicationController(config cfg.Config) ApplicationController {
 	return ApplicationController{
 		Config: config,
 	}
 }
 
-func (c ApplicationController) Middleware(rw http.ResponseWriter, req *http.Request) {}
+func (c ApplicationController) Name() string {
+	return "ApplicationController"
+}
+
+func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
+	return func(rw http.ResponseWriter, req *http.Request) {
+		handler(rw, req)
+	}
+}

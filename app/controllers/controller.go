@@ -1,7 +1,8 @@
 package controllers
 
-import "golang-web-core/srv"
+import "net/http"
 
 type Controller interface {
-	srv.Config
+	Name() string
+	BeforeAction(handler http.HandlerFunc) http.HandlerFunc
 }
