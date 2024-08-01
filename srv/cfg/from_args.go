@@ -1,7 +1,6 @@
 package cfg
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 )
@@ -48,20 +47,14 @@ func FromArgs() (Config, error) {
 		}
 	}
 	if certPath != "" {
-		_, err := os.ReadFile(certPath)
+		err := config.SSL.SetCertPath(certPath)
 		if err != nil {
-			if os.IsNotExist(err) {
-				return config, fmt.Errorf("the cert path you specified (%v) does not exist", certPath)
-			}
 			return config, err
 		}
 	}
 	if keyPath != "" {
-		_, err := os.ReadFile(keyPath)
+		err := config.SSL.SetKeyPath(keyPath)
 		if err != nil {
-			if os.IsNotExist(err) {
-				return config, fmt.Errorf("the cert path you specified (%v) does not exist", keyPath)
-			}
 			return config, err
 		}
 	}
@@ -75,6 +68,18 @@ func FromArgs() (Config, error) {
 			portNum, err := strconv.Atoi(port)
 			if err == nil {
 				config.Port = portNum
+			}
+		}
+		if arg == "--cert-path" {
+			err := config.SSL.SetCertPath(args[i+1])
+			if err != nil {
+				return config, err
+			}
+		}
+		if arg == "--key-path" {
+			err := config.SSL.SetKeyPath(args[i+1])
+			if err != nil {
+				return config, err
 			}
 		}
 	}
