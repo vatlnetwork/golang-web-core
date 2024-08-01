@@ -26,6 +26,7 @@ func NewServer(c cfg.Config) (*Server, error) {
 		Config: c,
 		Router: routes.NewRouter(c),
 		Mux:    *http.NewServeMux(),
+		Routes: map[string]routes.Route{},
 	}
 
 	err := server.registerRoutes()
@@ -52,7 +53,8 @@ func (s *Server) Start() error {
 	defer cancel()
 
 	server := http.Server{
-		Addr: addr,
+		Addr:    addr,
+		Handler: &s.Mux,
 	}
 
 	c := make(chan os.Signal, 1)
@@ -83,8 +85,12 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) registerRoutes() error {
-	routes := s.Router.Routes()
-	appController := controllers.NewApplicationController(s.Config)
+	appController, err := controllers.NewApplicationController(s.Config)
+	if err != nil {
+		return err
+	}
+	routes := s.Router.Routes(appController)
+
 	for _, route := range routes {
 		_, ok := s.Routes[route.Pattern]
 		if ok {
@@ -92,8 +98,8 @@ func (s *Server) registerRoutes() error {
 		}
 		s.Routes[route.Pattern] = route
 
-		s.Mux.Handle(fmt.Sprintf("%v %v", route.Method, route.Pattern), HandleRequest(appController, route))
-		s.Mux.Handle(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
+		s.Mux.HandleFunc(fmt.Sprintf("%v %v", route.Method, route.Pattern), HandleRequest(appController, route))
+		s.Mux.HandleFunc(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package srv
 
 import (
+	"fmt"
 	"golang-web-core/app/controllers"
 	"golang-web-core/app/routes"
 	"net/http"
@@ -8,7 +9,11 @@ import (
 
 func HandleRequest(appController controllers.ApplicationController, route routes.Route) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
-		appController.BeforeAction(route.Controller.BeforeAction(route.Handler))
+		fmt.Println("this ran 1")
+
+		controller := appController.Controllers[route.ControllerName]
+
+		appController.BeforeAction(controller.BeforeAction(route.Handler))(rw, req)
 	}
 }
 
