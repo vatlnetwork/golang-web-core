@@ -6,6 +6,7 @@ import (
 	"golang-web-core/app/controllers"
 	"golang-web-core/app/routes"
 	"golang-web-core/srv/cfg"
+	"golang-web-core/util"
 	"log"
 	"net"
 	"net/http"
@@ -76,7 +77,7 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	log.Printf("Server listening on %v\n\n", addr)
+	util.LogColor("green", "Server listening on %v\n", addr)
 
 	if s.Config.IsSSL() {
 		return server.ServeTLS(l, s.Config.SSL.CertPath, s.Config.SSL.KeyPath)

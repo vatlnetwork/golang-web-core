@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+// you shouldn't be touching this file except for the BeforeAction and setupControllers
+
 type ApplicationController struct {
 	cfg.Config
 	Controllers map[string]Controller
@@ -29,14 +31,18 @@ func (c ApplicationController) Name() string {
 
 func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
+		// any checks you want to do on every single request that goes into the server can go here
 		handler(rw, req)
 	}
 }
 
 func (c ApplicationController) setupControllers() error {
 	controllers := []Controller{
+		// this is where you initialize your controllers. if you do not initialize your controllers here, they will not be usable
 		NewTestController(c.Config),
 	}
+
+	// everything below here should be left untouched
 
 	for _, cont := range controllers {
 		_, ok := c.Controllers[cont.Name()]

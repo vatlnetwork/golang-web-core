@@ -1,3 +1,5 @@
+// this is an example controller
+
 package controllers
 
 import (

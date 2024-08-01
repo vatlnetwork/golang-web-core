@@ -17,6 +17,9 @@ func NewRouter(c cfg.Config) Router {
 }
 
 func (r Router) Routes(appController controllers.ApplicationController) []Route {
+	// this is where you define your routes. you can do this however you like so long as you populate
+	// all of the fields in each route. each field is necessary. if you have a lot of routes, you can split
+	// your routes up into multiple files, so long as they are all returned here
 	testController := appController.GetController("TestController").(controllers.TestController)
 
 	return []Route{
