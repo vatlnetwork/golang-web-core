@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"golang-web-core/srv/cfg"
 	"net/http"
 )
@@ -22,14 +21,10 @@ func (c TestController) Name() string {
 
 func (c TestController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
-		fmt.Println("this ran 3")
-
 		handler(rw, req)
 	}
 }
 
 func (c TestController) TestMethod(rw http.ResponseWriter, req *http.Request) {
-	fmt.Println("this ran 4")
-
 	rw.Write([]byte("test"))
 }

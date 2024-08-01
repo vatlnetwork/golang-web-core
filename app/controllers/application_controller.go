@@ -29,8 +29,6 @@ func (c ApplicationController) Name() string {
 
 func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
-		fmt.Println("this ran 2")
-
 		handler(rw, req)
 	}
 }
