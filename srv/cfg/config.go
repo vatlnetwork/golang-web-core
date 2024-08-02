@@ -6,8 +6,9 @@ import (
 )
 
 type Config struct {
-	Port int
-	SSL  SSL
+	Port     int
+	SSL      SSL
+	PublicFS bool
 }
 
 func (c Config) IsSSL() bool {

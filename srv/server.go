@@ -42,6 +42,7 @@ func NewServer(c cfg.Config) (*Server, error) {
 		fmt.Printf("      Cert Path: %v\n", c.SSL.CertPath)
 		fmt.Printf("      Key Path: %v\n", c.SSL.KeyPath)
 	}
+	fmt.Printf("   Public FS Enabled: %v\n", c.PublicFS)
 	fmt.Printf("   # of Routes: %v\n", len(server.Routes))
 	fmt.Println("")
 
@@ -103,7 +104,9 @@ func (s *Server) registerRoutes() error {
 		s.Mux.HandleFunc(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
 	}
 
-	s.Mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	if s.Config.PublicFS {
+		s.Mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	}
 
 	return nil
 }

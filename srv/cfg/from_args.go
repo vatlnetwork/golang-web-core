@@ -3,6 +3,7 @@ package cfg
 import (
 	"os"
 	"strconv"
+	"strings"
 )
 
 func GetEnvironment() Config {
@@ -39,6 +40,7 @@ func FromArgs() (Config, error) {
 	port := os.Getenv("GWC_PORT")
 	certPath := os.Getenv("GWC_CERT_PATH")
 	keyPath := os.Getenv("GWC_KEY_PATH")
+	enablePublicFS := os.Getenv("GWC_ENABLE_PUBLIC_FS")
 
 	if port != "" {
 		portNum, err := strconv.Atoi(port)
@@ -57,6 +59,9 @@ func FromArgs() (Config, error) {
 		if err != nil {
 			return config, err
 		}
+	}
+	if strings.ToLower(enablePublicFS) == "false" || strings.ToLower(enablePublicFS) == "no" {
+		config.PublicFS = false
 	}
 
 	args := os.Args
@@ -81,6 +86,9 @@ func FromArgs() (Config, error) {
 			if err != nil {
 				return config, err
 			}
+		}
+		if arg == "--disable-public-fs" {
+			config.PublicFS = false
 		}
 	}
 
