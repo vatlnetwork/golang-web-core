@@ -102,5 +102,8 @@ func (s *Server) registerRoutes() error {
 		s.Mux.HandleFunc(fmt.Sprintf("%v %v", route.Method, route.Pattern), HandleRequest(appController, route))
 		s.Mux.HandleFunc(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
 	}
+
+	s.Mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+
 	return nil
 }
