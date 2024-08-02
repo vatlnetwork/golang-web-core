@@ -32,8 +32,8 @@ func LogFatal(err error) {
 }
 
 var colors map[string]string = map[string]string{
-	"green":      "0;255;0",
-	"lightgreen": "100;255;100",
+	"green":      "0;150;50",
+	"lightgreen": "100;255;150",
 	"red":        "255;0;0",
 	"blue":       "0;0;255",
 }

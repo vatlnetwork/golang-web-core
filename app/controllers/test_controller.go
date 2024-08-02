@@ -4,6 +4,7 @@ package controllers
 
 import (
 	"golang-web-core/srv/cfg"
+	"golang-web-core/srv/render"
 	"net/http"
 )
 
@@ -28,5 +29,5 @@ func (c TestController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc 
 }
 
 func (c TestController) TestMethod(rw http.ResponseWriter, req *http.Request) {
-	rw.Write([]byte("test"))
+	render.RenderView(rw, "test/test_method.go.tmpl", "If you see this message, it means the test method worked.")
 }

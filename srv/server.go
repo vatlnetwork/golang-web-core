@@ -77,7 +77,7 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	util.LogColor("green", "Server listening on %v\n", addr)
+	util.LogColor("lightgreen", "Server listening on %v\n", addr)
 
 	if s.Config.IsSSL() {
 		return server.ServeTLS(l, s.Config.SSL.CertPath, s.Config.SSL.KeyPath)
