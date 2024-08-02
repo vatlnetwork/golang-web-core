@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	"golang-web-core/srv/cfg"
-	"log"
+	"golang-web-core/util"
 	"net/http"
 )
 
@@ -58,7 +58,7 @@ func (c ApplicationController) setupControllers() error {
 func (c ApplicationController) GetController(name string) Controller {
 	controller, ok := c.Controllers[name]
 	if !ok {
-		log.Fatalf("attempted to access a controller that does not exist! %v", name)
+		util.LogFatalf("attempted to access a controller that does not exist! %v", name)
 	}
 
 	return controller

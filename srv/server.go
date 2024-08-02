@@ -66,7 +66,7 @@ func (s *Server) Start() error {
 				log.Println("Gracefully shutting down...")
 				err := server.Shutdown(ctx)
 				if err != nil {
-					log.Fatal(err)
+					util.LogFatal(err)
 				}
 			}
 		}

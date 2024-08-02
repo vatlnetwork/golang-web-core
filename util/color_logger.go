@@ -31,6 +31,11 @@ func LogFatal(err error) {
 	log.Fatalf("\033[38;2;%vm%v\033[0m", colors["red"], err)
 }
 
+func LogFatalf(format string, parts ...any) {
+	strng := fmt.Sprintf(format, parts...)
+	LogFatal(fmt.Errorf(strng))
+}
+
 var colors map[string]string = map[string]string{
 	"green":      "0;150;50",
 	"lightgreen": "100;255;150",
