@@ -1,21 +1,22 @@
 package main
 
 import (
-	"golang-web-core/src/application/srv"
-	"golang-web-core/src/application/srv/cfg"
+	"golang-web-core/srv"
+	"golang-web-core/srv/cfg"
+	"golang-web-core/util"
 )
 
 func main() {
-	config, err := cfg.ConfigFromArgs()
+	cfg, err := cfg.FromArgs()
 	if err != nil {
-		panic(err)
+		util.LogFatal(err)
 	}
-	srv, err := srv.NewServer(config)
+	srv, err := srv.NewServer(cfg)
 	if err != nil {
-		panic(err)
+		util.LogFatal(err)
 	}
-	err = srv.Run()
-	if err != nil {
-		panic(err)
+
+	if err := srv.Start(); err != nil {
+		util.LogFatal(err)
 	}
 }
