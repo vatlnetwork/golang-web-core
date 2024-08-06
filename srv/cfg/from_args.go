@@ -3,6 +3,7 @@ package cfg
 import (
 	"golang-web-core/srv/database_adapters/imdb"
 	"golang-web-core/srv/database_adapters/mongo"
+	"golang-web-core/util"
 	"os"
 	"strconv"
 	"strings"
@@ -77,6 +78,8 @@ func FromArgs() (Config, error) {
 	case "mongo":
 		config.Database.Adapter = mongo.NewMongoAdapter()
 		config.Database.Connection = config.Database.Adapter.Connection()
+	case "none":
+		config.Database.Adapter = nil
 	}
 	if databaseHostname != "" {
 		config.Database.Connection.Hostname = databaseHostname
@@ -95,6 +98,10 @@ func FromArgs() (Config, error) {
 
 	// args override the env variables
 	for i, arg := range args {
+		if arg == "--help" {
+			util.PrintHelp()
+			os.Exit(0)
+		}
 		if arg == "-p" {
 			port := args[i+1]
 			portNum, err := strconv.Atoi(port)
