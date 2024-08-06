@@ -5,6 +5,7 @@ import (
 	"golang-web-core/srv/cfg"
 	"golang-web-core/util"
 	"net/http"
+	"reflect"
 )
 
 // you shouldn't be touching this file except for the BeforeAction and setupControllers
@@ -26,7 +27,7 @@ func NewApplicationController(config cfg.Config) (ApplicationController, error) 
 }
 
 func (c ApplicationController) Name() string {
-	return "ApplicationController"
+	return reflect.TypeOf(c).Name()
 }
 
 func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {

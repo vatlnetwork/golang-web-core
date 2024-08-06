@@ -6,6 +6,7 @@ import (
 	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/render"
 	"net/http"
+	"reflect"
 )
 
 type TestController struct {
@@ -19,7 +20,7 @@ func NewTestController(c cfg.Config) TestController {
 }
 
 func (c TestController) Name() string {
-	return "TestController"
+	return reflect.TypeOf(c).Name()
 }
 
 func (c TestController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {

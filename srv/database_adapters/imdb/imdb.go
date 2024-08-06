@@ -22,3 +22,7 @@ func (db Imdb) Name() string {
 func (db Imdb) Connection() databaseadapters.ConnectionConfig {
 	return db.ConnectionConfig
 }
+
+func (db Imdb) TestConnection() error {
+	return nil
+}

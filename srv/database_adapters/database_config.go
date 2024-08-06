@@ -10,5 +10,5 @@ func (c DatabaseConfig) UsingDatabase() bool {
 }
 
 func (c DatabaseConfig) UsingAuth() bool {
-	return c.UsingDatabase() && c.Connection.Username != "" && c.Connection.Password != ""
+	return c.UsingDatabase() && c.Connection.UsingAuth()
 }

@@ -6,3 +6,7 @@ type ConnectionConfig struct {
 	Username string
 	Password string
 }
+
+func (c ConnectionConfig) UsingAuth() bool {
+	return c.Username != "" && c.Password != ""
+}
