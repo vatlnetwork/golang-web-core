@@ -2,6 +2,7 @@ package cfg
 
 import (
 	"fmt"
+	databaseadapters "golang-web-core/srv/database_adapters"
 	"os"
 )
 
@@ -9,6 +10,7 @@ type Config struct {
 	Port     int
 	SSL      SSL
 	PublicFS bool
+	Database databaseadapters.DatabaseConfig
 }
 
 func (c Config) IsSSL() bool {

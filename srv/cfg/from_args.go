@@ -1,6 +1,8 @@
 package cfg
 
 import (
+	"golang-web-core/srv/database_adapters/imdb"
+	"golang-web-core/srv/database_adapters/mongo"
 	"os"
 	"strconv"
 	"strings"
@@ -41,6 +43,11 @@ func FromArgs() (Config, error) {
 	certPath := os.Getenv("GWC_CERT_PATH")
 	keyPath := os.Getenv("GWC_KEY_PATH")
 	enablePublicFS := os.Getenv("GWC_ENABLE_PUBLIC_FS")
+	databaseAdapter := os.Getenv("GWC_DB_ADAPTER")
+	databaseHostname := os.Getenv("GWC_DB_HOSTNAME")
+	databaseName := os.Getenv("GWC_DB_NAME")
+	databaseUsername := os.Getenv("GWC_DB_USERNAME")
+	databasePassword := os.Getenv("GWC_DB_PASSWORD")
 
 	if port != "" {
 		portNum, err := strconv.Atoi(port)
@@ -62,6 +69,26 @@ func FromArgs() (Config, error) {
 	}
 	if strings.ToLower(enablePublicFS) == "false" || strings.ToLower(enablePublicFS) == "no" {
 		config.PublicFS = false
+	}
+	switch databaseAdapter {
+	case "imdb":
+		config.Database.Adapter = imdb.NewImdbAdapter()
+		config.Database.Connection = config.Database.Adapter.Connection()
+	case "mongo":
+		config.Database.Adapter = mongo.NewMongoAdapter()
+		config.Database.Connection = config.Database.Adapter.Connection()
+	}
+	if databaseHostname != "" {
+		config.Database.Connection.Hostname = databaseHostname
+	}
+	if databaseName != "" {
+		config.Database.Connection.Database = databaseName
+	}
+	if databaseUsername != "" {
+		config.Database.Connection.Username = databaseUsername
+	}
+	if databasePassword != "" {
+		config.Database.Connection.Password = databasePassword
 	}
 
 	args := os.Args
@@ -89,6 +116,31 @@ func FromArgs() (Config, error) {
 		}
 		if arg == "--disable-public-fs" {
 			config.PublicFS = false
+		}
+		if arg == "--db-adapter" {
+			switch args[i+1] {
+			case "imdb":
+				config.Database.Adapter = imdb.NewImdbAdapter()
+				config.Database.Connection = config.Database.Adapter.Connection()
+			case "mongo":
+				config.Database.Adapter = mongo.NewMongoAdapter()
+				config.Database.Connection = config.Database.Adapter.Connection()
+			}
+		}
+		if arg == "--db-host" {
+			config.Database.Connection.Hostname = args[i+1]
+		}
+		if arg == "--db-name" {
+			config.Database.Connection.Database = args[i+1]
+		}
+		if arg == "--db-user" {
+			config.Database.Connection.Username = args[i+1]
+		}
+		if arg == "--db-pass" {
+			config.Database.Connection.Password = args[i+1]
+		}
+		if arg == "--no-db" {
+			config.Database.Adapter = nil
 		}
 	}
 
