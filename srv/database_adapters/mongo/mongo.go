@@ -70,3 +70,45 @@ func (m Mongo) Ping(client *mongo.Client, ctx context.Context) error {
 	}
 	return nil
 }
+
+func (m Mongo) InsertOne(client *mongo.Client, ctx context.Context, col string, doc interface{}) error {
+	collection := client.Database(m.Database).Collection(col)
+	_, err := collection.InsertOne(ctx, doc)
+	return err
+}
+
+func (m Mongo) InsertMany(client *mongo.Client, ctx context.Context, col string, docs []interface{}) error {
+	collection := client.Database(m.Database).Collection(col)
+	_, err := collection.InsertMany(ctx, docs)
+	return err
+}
+
+func (m Mongo) Query(client *mongo.Client, ctx context.Context, col string, query, field interface{}) (*mongo.Cursor, error) {
+	collection := client.Database(m.Database).Collection(col)
+	result, err := collection.Find(ctx, query, options.Find().SetProjection(field))
+	return result, err
+}
+
+func (m Mongo) UpdateOne(client *mongo.Client, ctx context.Context, col string, filter, update interface{}) error {
+	collection := client.Database(m.Database).Collection(col)
+	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (m Mongo) UpdateMany(client *mongo.Client, ctx context.Context, col string, filter, update interface{}) error {
+	collection := client.Database(m.Database).Collection(col)
+	_, err := collection.UpdateMany(ctx, filter, update)
+	return err
+}
+
+func (m Mongo) DeleteOne(client *mongo.Client, ctx context.Context, col string, query interface{}) error {
+	collection := client.Database(m.Database).Collection(col)
+	_, err := collection.DeleteOne(ctx, query)
+	return err
+}
+
+func (m Mongo) DeleteMany(client *mongo.Client, ctx context.Context, col string, query interface{}) error {
+	collection := client.Database(m.Database).Collection(col)
+	_, err := collection.DeleteMany(ctx, query)
+	return err
+}
