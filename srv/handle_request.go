@@ -25,5 +25,26 @@ func HandleOptions(rw http.ResponseWriter, req *http.Request) {
 }
 
 func logRequest(req *http.Request) {
-	log.Printf("Started %v %v\n", req.Method, req.URL.Path)
+	color := "255;255;255"
+
+	switch req.Method {
+	case http.MethodGet:
+		color = "0;0;255"
+	case http.MethodConnect:
+		color = "0;0;255"
+	case http.MethodOptions:
+		color = "0;0;255"
+	case http.MethodTrace:
+		color = "0;0;255"
+	case http.MethodPost:
+		color = "100;255;100"
+	case http.MethodPatch:
+		color = "100;255;100"
+	case http.MethodPut:
+		color = "100;255;100"
+	case http.MethodDelete:
+		color = "255;0;0"
+	}
+
+	log.Printf("Started \033[38;2;%vm%v\033[0m %v for %v\n", color, req.Method, req.URL.Path, req.RemoteAddr)
 }

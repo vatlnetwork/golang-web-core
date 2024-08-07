@@ -25,7 +25,7 @@ func (s *Server) RegisterRoutes() error {
 	}
 
 	if s.Config.PublicFS {
-		s.Mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+		s.Mux.Handle("/public/", http.StripPrefix("/public/", FileServer{Handler: http.FileServer(http.Dir("public"))}))
 	}
 
 	return nil
