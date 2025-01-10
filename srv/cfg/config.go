@@ -40,7 +40,7 @@ func (s *SSL) SetKeyPath(path string) error {
 	_, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("the cert path you specified (%v) does not exist", path)
+			return fmt.Errorf("the key path you specified (%v) does not exist", path)
 		}
 		return err
 	}
