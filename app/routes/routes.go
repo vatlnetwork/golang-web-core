@@ -27,7 +27,13 @@ func (r Router) Routes(appController controllers.ApplicationController) []Route 
 			Pattern:        "/test_route",
 			Method:         http.MethodGet,
 			Handler:        testController.TestMethod,
-			ControllerName: "TestController",
+			ControllerName: testController.Name(),
+		},
+		{
+			Pattern:        "/test_member_route/{member_var}/test",
+			Method:         http.MethodGet,
+			Handler:        testController.TestMemberMethod,
+			ControllerName: testController.Name(),
 		},
 	}
 }

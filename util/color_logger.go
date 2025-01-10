@@ -33,7 +33,7 @@ func LogFatal(err error) {
 
 func LogFatalf(format string, parts ...any) {
 	strng := fmt.Sprintf(format, parts...)
-	LogFatal(fmt.Errorf(strng))
+	LogFatal(fmt.Errorf("%s", strng))
 }
 
 var colors map[string]string = map[string]string{

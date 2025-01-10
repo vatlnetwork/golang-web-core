@@ -32,3 +32,9 @@ func (c TestController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc 
 func (c TestController) TestMethod(rw http.ResponseWriter, req *http.Request) {
 	render.RenderView(rw, "test/test_method.go.tmpl", "If you see this message, it means the test method worked.")
 }
+
+func (c TestController) TestMemberMethod(rw http.ResponseWriter, req *http.Request) {
+	member_var := req.PathValue("member_var")
+
+	render.RenderView(rw, "test/test_member_method.go.tmpl", member_var)
+}
