@@ -25,6 +25,7 @@ func (c TestController) Name() string {
 
 func (c TestController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
+		// see the comments in application controller to understand more about BeforeAction
 		handler(rw, req)
 	}
 }

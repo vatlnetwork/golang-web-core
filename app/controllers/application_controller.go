@@ -33,6 +33,13 @@ func (c ApplicationController) Name() string {
 func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
 		// any checks you want to do on every single request that goes into the server can go here
+
+		// this line initiates the next step in the request process.
+		// if you wanted to throw an error here or something, it might look something like this:
+		// if (someCondition) {
+		// 	http.Error(rw, "This is a test internal server error", http.StatusInternalServerError)
+		// 	return
+		// }
 		handler(rw, req)
 	}
 }
