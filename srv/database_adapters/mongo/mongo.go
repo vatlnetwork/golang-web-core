@@ -8,9 +8,9 @@ import (
 	"reflect"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
 type Mongo struct {
@@ -60,7 +60,7 @@ func (m Mongo) Close(client *mongo.Client, ctx context.Context, cancel context.C
 
 func (m Mongo) Connect() (*mongo.Client, context.Context, context.CancelFunc, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(m.ConnectionString()))
+	client, err := mongo.Connect(options.Client().ApplyURI(m.ConnectionString()))
 	return client, ctx, cancel, err
 }
 

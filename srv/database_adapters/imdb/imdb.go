@@ -31,11 +31,6 @@ func (db Imdb) TestConnection() error {
 	return nil
 }
 
-type TestInt struct {
-	id   string
-	name string
-}
-
 func (db *Imdb) Insert(modelName string, object interface{}) {
 	collection, ok := db.Data[modelName]
 	if !ok {

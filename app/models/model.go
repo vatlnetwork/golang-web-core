@@ -1,13 +1,16 @@
 package models
 
+import databaseadapters "golang-web-core/srv/database_adapters"
+
 type Model interface {
+	Adapter() *databaseadapters.DatabaseAdapter
 	Name() string
 	PrimaryKey() string
 	Create(object interface{}) (interface{}, error)
-	Find(key any) (interface{}, error)
-	Where(query interface{}) ([]interface{}, error)
-	Update(key any, object interface{}) error
-	UpdateWhere(query interface{}, object interface{}) error
-	Delete(key any) error
-	DeleteWhere(query interface{}) error
+	Find(key interface{}) (interface{}, error)
+	Where(query map[string]interface{}) (interface{}, error)
+	Update(key, object interface{}) error
+	UpdateWhere(query map[string]interface{}, object interface{}) error
+	Delete(key interface{}) error
+	DeleteWhere(query map[string]interface{}) error
 }
