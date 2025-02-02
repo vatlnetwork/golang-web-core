@@ -9,6 +9,7 @@ type Model interface {
 	Create(object interface{}) (interface{}, error)
 	Find(key interface{}) (interface{}, error)
 	Where(query map[string]interface{}) (interface{}, error)
+	All() (interface{}, error)
 	Update(key, object interface{}) error
 	UpdateWhere(query map[string]interface{}, object interface{}) error
 	Delete(key interface{}) error

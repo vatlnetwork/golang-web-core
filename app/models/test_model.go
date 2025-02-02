@@ -12,7 +12,8 @@ import (
 
 var UnknownAdapterError error = fmt.Errorf("The database adapter specified for TestModel is unrecognized.")
 
-var TestObjectVerifier Model = TestModel{}
+// this line is here to verify that TestModel implements the Model interface
+var TestModelVerifier Model = TestModel{}
 
 type TestObject struct {
 	Id      string `json:"id" bson:"id"`
@@ -56,6 +57,7 @@ func (m TestModel) Create(object interface{}) (interface{}, error) {
 	if !isObject {
 		return nil, fmt.Errorf("the given object is not a TestObject")
 	}
+
 	// if the adapter is a mongo adapter
 	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
 	if ok {
@@ -210,6 +212,58 @@ func (m TestModel) Where(query map[string]interface{}) (interface{}, error) {
 
 			// append the TestObject to the results array
 			results = append(results, obj)
+		}
+
+		// return the results
+		return results, nil
+	}
+
+	// return unknown adapter error if the passed in adapter is not matched to a case
+	return nil, UnknownAdapterError
+}
+
+func (m TestModel) All() (interface{}, error) {
+	// case for mongo adapter
+	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	if ok {
+		// connect to the mongo db
+		client, ctx, cancel, err := mongoAdapter.Connect()
+		if err != nil {
+			return nil, err
+		}
+		defer mongoAdapter.Close(client, ctx, cancel)
+
+		// get all records from the database
+		cursor, err := mongoAdapter.Query(client, ctx, m.Name(), bson.M{}, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		// decode all of the records
+		var objects []TestObject
+		err = cursor.All(ctx, &objects)
+		if err != nil {
+			return nil, err
+		}
+
+		// return the decoded records
+		return objects, nil
+	}
+
+	// case for imdb adapter
+	imdbAdapter, ok := (*m.adapter).(imdb.Imdb)
+	if ok {
+		// get all of the objects from the memory collection
+		objects := imdbAdapter.GetAll(m.Name())
+
+		// convert the results into TestObjects
+		results := []TestObject{}
+		for _, object := range objects {
+			_, isObject := object.(TestObject)
+			if !isObject {
+				return nil, fmt.Errorf("found an object that is not a TestObject")
+			}
+			results = append(results, object.(TestObject))
 		}
 
 		// return the results

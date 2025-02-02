@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang-web-core/app/routes"
 	"golang-web-core/srv/cfg"
+	"golang-web-core/srv/route"
 	"golang-web-core/util"
 	"net"
 	"net/http"
@@ -13,7 +14,7 @@ type Server struct {
 	Config cfg.Config
 	Router routes.Router
 	Mux    http.ServeMux
-	Routes map[string]routes.Route
+	Routes map[string]route.Route
 }
 
 func NewServer(c cfg.Config) (*Server, error) {
@@ -21,7 +22,7 @@ func NewServer(c cfg.Config) (*Server, error) {
 		Config: c,
 		Router: routes.NewRouter(c),
 		Mux:    *http.NewServeMux(),
-		Routes: map[string]routes.Route{},
+		Routes: map[string]route.Route{},
 	}
 
 	err := server.RegisterRoutes()
