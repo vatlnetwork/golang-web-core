@@ -9,8 +9,8 @@ window.onload = () => {
     children: [
       new Div({
         styles: {
-          width: "100%",
-          height: "100%",
+          width: "100vw",
+          height: "100vh",
           boxSizing: "border-box",
           margin: "0px",
           padding: "10px",
