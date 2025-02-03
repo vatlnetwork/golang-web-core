@@ -1,0 +1,3 @@
+[submodule "public/js-component-lib"]
+	path = public/js-component-lib
+	url = https://github.com/vatlnetwork/js-component-lib.git

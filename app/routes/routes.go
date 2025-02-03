@@ -4,6 +4,7 @@ import (
 	"golang-web-core/app/controllers"
 	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/route"
+	"net/http"
 )
 
 type Router struct {
@@ -22,7 +23,14 @@ func (r Router) Routes(appController controllers.ApplicationController) []route.
 	// your routes up into multiple files, so long as they are all returned here
 	testController := appController.GetController("TestController").(controllers.TestController)
 
-	routes := []route.Route{}
+	routes := []route.Route{
+		{
+			Pattern:        "/favicon.ico",
+			Method:         http.MethodGet,
+			Handler:        appController.Favicon,
+			ControllerName: appController.Name(),
+		},
+	}
 
 	routes = append(routes, testController.Routes()...)
 

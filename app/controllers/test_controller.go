@@ -186,5 +186,5 @@ func (c TestController) TestDestroyMethod(rw http.ResponseWriter, req *http.Requ
 }
 
 func (c TestController) CRUDTest(rw http.ResponseWriter, req *http.Request) {
-	render.RenderView(rw, "test/crud_test.go.tmpl", nil)
+	render.RenderView(rw, "test/crud_test.html", nil)
 }
