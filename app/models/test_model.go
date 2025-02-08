@@ -5,6 +5,7 @@ import (
 	databaseadapters "golang-web-core/srv/database_adapters"
 	"golang-web-core/srv/database_adapters/imdb"
 	"golang-web-core/srv/database_adapters/mongo"
+	"strings"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -16,9 +17,9 @@ var UnknownAdapterError error = fmt.Errorf("The database adapter specified for T
 var TestModelVerifier Model = TestModel{}
 
 type TestObject struct {
-	Id      string `json:"id" bson:"id"`
-	Number  int    `json:"number" bson:"number"`
-	Boolean bool   `json:"boolean" bson:"boolean"`
+	Id      string `json:"id"`
+	Number  int    `json:"number"`
+	Boolean bool   `json:"boolean"`
 }
 
 func NewTestObject(number int, boolean bool) TestObject {
@@ -48,7 +49,7 @@ func (m TestModel) Name() string {
 }
 
 func (m TestModel) PrimaryKey() string {
-	return "id"
+	return "Id"
 }
 
 func (m TestModel) Create(object interface{}) (interface{}, error) {
@@ -112,8 +113,9 @@ func (m TestModel) Find(key interface{}) (interface{}, error) {
 		defer mongoAdapter.Close(client, context, cancel)
 
 		// build query
+		lowerCaseKey := strings.ToLower(m.PrimaryKey())
 		query := bson.M{
-			m.PrimaryKey(): key,
+			lowerCaseKey: key,
 		}
 
 		// get results from mongo database
@@ -240,7 +242,7 @@ func (m TestModel) All() (interface{}, error) {
 		}
 
 		// decode all of the records
-		var objects []TestObject
+		objects := []TestObject{}
 		err = cursor.All(ctx, &objects)
 		if err != nil {
 			return nil, err
@@ -298,8 +300,9 @@ func (m TestModel) Update(key, object interface{}) error {
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		// build query
+		lowerCaseKey := strings.ToLower(m.PrimaryKey())
 		filter := bson.M{
-			m.PrimaryKey(): key,
+			lowerCaseKey: key,
 		}
 
 		// build update object
@@ -417,8 +420,9 @@ func (m TestModel) Delete(key interface{}) error {
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		// build query
+		lowerCaseKey := strings.ToLower(m.PrimaryKey())
 		filter := bson.M{
-			m.PrimaryKey(): key,
+			lowerCaseKey: key,
 		}
 
 		// delete the first record matching the query
