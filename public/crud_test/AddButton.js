@@ -3,7 +3,7 @@ import Component from "../js-component-lib/lib/Component.js";
 class AddButton extends Component {
   /**
    *
-   * @param {{handleAdd: () => {}}} props
+   * @param {{handleAdd: () => {};}} props
    */
   constructor(props) {
     const { handleAdd } = props;
