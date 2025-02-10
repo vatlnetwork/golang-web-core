@@ -1,8 +1,10 @@
 import Component from "../js-component-lib/lib/Component.js";
 import { useTheme } from "../js-component-lib/lib/useTheme.js";
+import TextField from "../js-component-lib/components/TextField.js";
 
 class DataTable extends Component {
   handleDelete;
+  handleUpdateRow;
   data;
 
   /**
@@ -10,10 +12,11 @@ class DataTable extends Component {
    * @param {{
    *  data: {id: string; number: number; boolean: boolean}[];
    *  handleDelete: (id: string) => {};
+   *  handleUpdateRow: (id: string, number: number, boolean: boolean) => {};
    * }} props
    */
   constructor(props) {
-    const { data, handleDelete } = props;
+    const { data, handleDelete, handleUpdateRow } = props;
     if (data == undefined || data == null) {
       throw new Error("data must be defined");
     }
@@ -27,6 +30,7 @@ class DataTable extends Component {
 
     this.data = data;
     this.handleDelete = handleDelete;
+    this.handleUpdateRow = handleUpdateRow;
 
     this.initTheme();
     this.rebuild(data);
@@ -101,7 +105,7 @@ class DataTable extends Component {
     const idCell = this.buildIdCell(item.id);
     const numberCell = this.buildNumberCell(item.number);
     const booleanCell = this.buildBooleanCell(item.boolean);
-    const editCell = this.buildEditCell();
+    const editCell = this.buildEditCell(item);
     const deleteCell = this.buildDeleteCell(item.id);
     tr.appendChild(idCell);
     tr.appendChild(numberCell);
@@ -147,10 +151,16 @@ class DataTable extends Component {
     return booleanCell;
   }
 
-  buildEditCell() {
+  /**
+   *
+   * @param {{id: string; number: number; boolean: boolean;}} item
+   * @returns
+   */
+  buildEditCell(item) {
     const editCell = document.createElement("td");
     const editButton = document.createElement("button");
     editButton.innerHTML = "Edit";
+    editButton.onclick = () => this.editRow(item);
     editCell.appendChild(editButton);
     this.applyCellStyles(editCell);
     return editCell;
@@ -172,6 +182,93 @@ class DataTable extends Component {
     this.applyCellStyles(deleteCell);
 
     return deleteCell;
+  }
+
+  /**
+   *
+   * @param {{id: string; number: number; boolean: boolean}} item
+   */
+  editRow(item) {
+    const { id, number, boolean } = item;
+    const tr = this.element.querySelector(`tr[id="${id}"]`);
+    tr.innerHTML = "";
+
+    const idCell = this.buildIdCell(id);
+    const numberCell = this.buildNumberEditCell(id, number);
+    const booleanCell = this.buildBooleanEditCell(id, boolean);
+    const saveCell = this.buildSaveCell(id);
+    const deleteCell = this.buildDeleteCell(id);
+
+    tr.appendChild(idCell);
+    tr.appendChild(numberCell);
+    tr.appendChild(booleanCell);
+    tr.appendChild(saveCell);
+    tr.appendChild(deleteCell);
+  }
+
+  /**
+   *
+   * @param {string} id
+   * @param {number} number
+   * @returns
+   */
+  buildNumberEditCell(id, number) {
+    const numberCell = document.createElement("td");
+    const numberInput = new TextField({
+      inputId: `number-${id}`,
+      label: "Number",
+      defaultValue: number.toString(),
+    });
+    numberCell.appendChild(numberInput.render());
+    this.applyCellStyles(numberCell);
+    return numberCell;
+  }
+
+  /**
+   *
+   * @param {string} id
+   * @param {boolean} boolean
+   * @returns
+   */
+  buildBooleanEditCell(id, boolean) {
+    const booleanCell = document.createElement("td");
+    const booleanInput = new TextField({
+      inputId: `boolean-${id}`,
+      label: "Boolean",
+      defaultValue: boolean.toString(),
+    });
+    booleanCell.appendChild(booleanInput.render());
+    this.applyCellStyles(booleanCell);
+    return booleanCell;
+  }
+
+  /**
+   *
+   * @param {string} id
+   * @returns
+   */
+  buildSaveCell(id) {
+    const saveCell = document.createElement("td");
+    const saveButton = document.createElement("button");
+    saveButton.innerHTML = "Save";
+    saveButton.onclick = () => {
+      const numberValue = document.getElementById(`number-${id}`).value;
+      let number = parseInt(numberValue);
+      if (isNaN(number)) {
+        number = 0;
+      }
+      const booleanValue = document.getElementById(`boolean-${id}`).value;
+      let boolean;
+      if (booleanValue == "true") {
+        boolean = true;
+      } else {
+        boolean = false;
+      }
+      this.handleUpdateRow(id, number, boolean);
+    };
+    saveCell.appendChild(saveButton);
+    this.applyCellStyles(saveCell);
+    return saveCell;
   }
 }
 

@@ -21,7 +21,35 @@ window.onload = () => {
     }
   };
 
-  const dataTable = new DataTable({ data: [], handleDelete: handleDeleteRow });
+  /**
+   *
+   * @param {string} id
+   * @param {number} number
+   * @param {boolean} boolean
+   */
+  const handleUpdateRow = async (id, number, boolean) => {
+    try {
+      await fetch("/test/update", {
+        method: "PATCH",
+        body: JSON.stringify({
+          id,
+          number,
+          boolean,
+        }),
+      });
+      dataTable.rebuild(
+        dataTable.data.map((i) => (i.id == id ? { id, number, boolean } : i))
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const dataTable = new DataTable({
+    data: [],
+    handleDelete: handleDeleteRow,
+    handleUpdateRow: handleUpdateRow,
+  });
 
   const getData = async () => {
     try {
