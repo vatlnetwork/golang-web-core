@@ -90,7 +90,7 @@ func (m TestModel) Create(object interface{}) (interface{}, error) {
 	// this line is only reached if the function fails to return before this,
 	// in which case it is assumed that the adapter that was passed in was not
 	// recognized as a known adapter
-	return nil, ErrUnsupportedAdapter(m, &m.adapter)
+	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) Find(key interface{}) (interface{}, error) {
