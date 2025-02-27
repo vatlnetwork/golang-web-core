@@ -19,6 +19,8 @@ type TestController struct {
 	cfg.Config
 }
 
+var TestControllerVerifier Controller = TestController{}
+
 func NewTestController(c cfg.Config) TestController {
 	return TestController{
 		Config: c,

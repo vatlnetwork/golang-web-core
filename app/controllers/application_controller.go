@@ -15,6 +15,8 @@ type ApplicationController struct {
 	Controllers map[string]Controller
 }
 
+var ApplicationControllerVerifier Controller = ApplicationController{}
+
 func NewApplicationController(config cfg.Config) (ApplicationController, error) {
 	cont := ApplicationController{
 		Config:      config,
