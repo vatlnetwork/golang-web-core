@@ -90,7 +90,7 @@ func (m TestModel) Create(object interface{}) (interface{}, error) {
 	// this line is only reached if the function fails to return before this,
 	// in which case it is assumed that the adapter that was passed in was not
 	// recognized as a known adapter
-	return nil, ErrUnsupportedAdapter(m, *m.adapter)
+	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) Find(key interface{}) (interface{}, error) {
@@ -158,7 +158,7 @@ func (m TestModel) Find(key interface{}) (interface{}, error) {
 	}
 
 	// return unknown adapter error if the adapter passed in can not be matched to any of the adapter cases
-	return nil, ErrUnsupportedAdapter(m, *m.adapter)
+	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) Where(query map[string]interface{}) (interface{}, error) {
@@ -219,7 +219,7 @@ func (m TestModel) Where(query map[string]interface{}) (interface{}, error) {
 	}
 
 	// return unknown adapter error if the passed in adapter is not matched to a case
-	return nil, ErrUnsupportedAdapter(m, *m.adapter)
+	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) All() (interface{}, error) {
@@ -271,7 +271,7 @@ func (m TestModel) All() (interface{}, error) {
 	}
 
 	// return unknown adapter error if the passed in adapter is not matched to a case
-	return nil, ErrUnsupportedAdapter(m, *m.adapter)
+	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) Update(key, object interface{}) error {
@@ -332,7 +332,7 @@ func (m TestModel) Update(key, object interface{}) error {
 	}
 
 	// return unknown adapter error unless adapter is matched to a case
-	return ErrUnsupportedAdapter(m, *m.adapter)
+	return ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) UpdateWhere(query map[string]interface{}, object interface{}) error {
@@ -397,7 +397,7 @@ func (m TestModel) UpdateWhere(query map[string]interface{}, object interface{})
 	}
 
 	// return unknown adapter error for adapters without a case
-	return ErrUnsupportedAdapter(m, *m.adapter)
+	return ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) Delete(key interface{}) error {
@@ -447,7 +447,7 @@ func (m TestModel) Delete(key interface{}) error {
 	}
 
 	// return unknown adapter error for adapters without a case
-	return ErrUnsupportedAdapter(m, *m.adapter)
+	return ErrUnsupportedAdapter(m, m.adapter)
 }
 
 func (m TestModel) DeleteWhere(query map[string]interface{}) error {
@@ -500,5 +500,5 @@ func (m TestModel) DeleteWhere(query map[string]interface{}) error {
 	}
 
 	// return unknown adapter error for adapters that don't have a case written here
-	return ErrUnsupportedAdapter(m, *m.adapter)
+	return ErrUnsupportedAdapter(m, m.adapter)
 }
