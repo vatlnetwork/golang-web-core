@@ -19,6 +19,7 @@ type TestController struct {
 	cfg.Config
 }
 
+// this verifies that TestController fully implements Controller
 var TestControllerVerifier Controller = TestController{}
 
 func NewTestController(c cfg.Config) TestController {

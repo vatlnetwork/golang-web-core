@@ -15,6 +15,7 @@ type ApplicationController struct {
 	Controllers map[string]Controller
 }
 
+// this verifies that ApplicationController fully implements Controller
 var ApplicationControllerVerifier Controller = ApplicationController{}
 
 func NewApplicationController(config cfg.Config) (ApplicationController, error) {
