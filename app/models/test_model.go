@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-var UnknownAdapterError error = fmt.Errorf("The database adapter specified for TestModel is unrecognized.")
+var ErrUnknownAdapter error = fmt.Errorf("the database adapter specified for TestModel is unrecognized")
 
 // this line is here to verify that TestModel implements the Model interface
 var TestModelVerifier Model = TestModel{}
@@ -92,7 +92,7 @@ func (m TestModel) Create(object interface{}) (interface{}, error) {
 	// this line is only reached if the function fails to return before this,
 	// in which case it is assumed that the adapter that was passed in was not
 	// recognized as a known adapter
-	return nil, UnknownAdapterError
+	return nil, ErrUnknownAdapter
 }
 
 func (m TestModel) Find(key interface{}) (interface{}, error) {
@@ -160,7 +160,7 @@ func (m TestModel) Find(key interface{}) (interface{}, error) {
 	}
 
 	// return unknown adapter error if the adapter passed in can not be matched to any of the adapter cases
-	return nil, UnknownAdapterError
+	return nil, ErrUnknownAdapter
 }
 
 func (m TestModel) Where(query map[string]interface{}) (interface{}, error) {
@@ -221,7 +221,7 @@ func (m TestModel) Where(query map[string]interface{}) (interface{}, error) {
 	}
 
 	// return unknown adapter error if the passed in adapter is not matched to a case
-	return nil, UnknownAdapterError
+	return nil, ErrUnknownAdapter
 }
 
 func (m TestModel) All() (interface{}, error) {
@@ -273,7 +273,7 @@ func (m TestModel) All() (interface{}, error) {
 	}
 
 	// return unknown adapter error if the passed in adapter is not matched to a case
-	return nil, UnknownAdapterError
+	return nil, ErrUnknownAdapter
 }
 
 func (m TestModel) Update(key, object interface{}) error {
@@ -334,7 +334,7 @@ func (m TestModel) Update(key, object interface{}) error {
 	}
 
 	// return unknown adapter error unless adapter is matched to a case
-	return UnknownAdapterError
+	return ErrUnknownAdapter
 }
 
 func (m TestModel) UpdateWhere(query map[string]interface{}, object interface{}) error {
@@ -399,7 +399,7 @@ func (m TestModel) UpdateWhere(query map[string]interface{}, object interface{})
 	}
 
 	// return unknown adapter error for adapters without a case
-	return UnknownAdapterError
+	return ErrUnknownAdapter
 }
 
 func (m TestModel) Delete(key interface{}) error {
@@ -449,7 +449,7 @@ func (m TestModel) Delete(key interface{}) error {
 	}
 
 	// return unknown adapter error for adapters without a case
-	return UnknownAdapterError
+	return ErrUnknownAdapter
 }
 
 func (m TestModel) DeleteWhere(query map[string]interface{}) error {
@@ -502,5 +502,5 @@ func (m TestModel) DeleteWhere(query map[string]interface{}) error {
 	}
 
 	// return unknown adapter error for adapters that don't have a case written here
-	return UnknownAdapterError
+	return ErrUnknownAdapter
 }
