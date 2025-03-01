@@ -14,14 +14,18 @@ func (s *Server) RegisterRoutes() error {
 	routes := s.Router.Routes(appController)
 
 	for _, route := range routes {
-		_, ok := s.Routes[route.Pattern]
+		existingRoute, ok := s.Routes[route.Pattern]
 		if ok {
-			return fmt.Errorf("error: route pattern %v was registered twice. you may only register a single pattern once", route.Pattern)
+			if existingRoute.Method == route.Method {
+				return fmt.Errorf("error: route pattern %v %v was registered twice. you may only register a single pattern once", route.Method, route.Pattern)
+			}
 		}
 		s.Routes[route.Pattern] = route
 
 		s.Mux.HandleFunc(fmt.Sprintf("%v %v", route.Method, route.Pattern), HandleRequest(appController, route))
-		s.Mux.HandleFunc(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
+		if !ok {
+			s.Mux.HandleFunc(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
+		}
 	}
 
 	if s.Config.PublicFS {
