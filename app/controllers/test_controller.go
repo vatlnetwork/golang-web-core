@@ -72,6 +72,12 @@ func (c TestController) Routes() []route.Route {
 			ControllerName: c.Name(),
 		},
 		{
+			Pattern:        "/test/update",
+			Method:         http.MethodPut,
+			Handler:        c.TestUpdateMethod,
+			ControllerName: c.Name(),
+		},
+		{
 			Pattern:        "/test/{id}/delete",
 			Method:         http.MethodDelete,
 			Handler:        c.TestDestroyMethod,
