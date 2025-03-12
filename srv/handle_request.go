@@ -39,9 +39,9 @@ func logRequest(req *http.Request) {
 	case http.MethodPost:
 		color = "100;255;100"
 	case http.MethodPatch:
-		color = "100;255;100"
+		color = "255;255;0"
 	case http.MethodPut:
-		color = "100;255;100"
+		color = "255;255;0"
 	case http.MethodDelete:
 		color = "255;0;0"
 	}

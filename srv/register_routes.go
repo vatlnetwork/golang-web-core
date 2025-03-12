@@ -17,7 +17,7 @@ func (s *Server) RegisterRoutes() error {
 		existingRoute, ok := s.Routes[route.Pattern]
 		if ok {
 			if existingRoute.Method == route.Method {
-				return fmt.Errorf("error: route pattern %v %v was registered twice. you may only register a single pattern once", route.Method, route.Pattern)
+				return fmt.Errorf("error: route pattern %v %v was registered twice", route.Method, route.Pattern)
 			}
 		}
 		s.Routes[route.Pattern] = route
@@ -29,7 +29,7 @@ func (s *Server) RegisterRoutes() error {
 	}
 
 	if s.Config.PublicFS {
-		s.Mux.Handle("/public/", http.StripPrefix("/public/", FileServer{Handler: http.FileServer(http.Dir("public"))}))
+		s.Mux.Handle("GET /public/", http.StripPrefix("/public/", FileServer{Prefix: "/public/", Handler: http.FileServer(http.Dir("public"))}))
 	}
 
 	return nil

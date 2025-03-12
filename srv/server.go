@@ -27,7 +27,7 @@ func NewServer(c cfg.Config) (*Server, error) {
 
 	err := server.RegisterRoutes()
 	if err != nil {
-		return &server, err
+		return nil, err
 	}
 
 	PrintServerConfig(&server)
@@ -54,7 +54,7 @@ func (s *Server) Start() error {
 		}
 	}
 
-	s.HandleShutdown(&server)
+	s.RegisterHandleShutdown(&server)
 
 	util.LogColor("lightgreen", "Server listening on %v\n", addr)
 
