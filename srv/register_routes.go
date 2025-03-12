@@ -17,7 +17,7 @@ func (s *Server) RegisterRoutes() error {
 		existingRoute, ok := s.Routes[route.Pattern]
 		if ok {
 			if existingRoute.Method == route.Method {
-				return fmt.Errorf("error: route pattern %v %v was registered twice. you may only register a single pattern once", route.Method, route.Pattern)
+				return fmt.Errorf("error: route pattern %v %v was registered twice", route.Method, route.Pattern)
 			}
 		}
 		s.Routes[route.Pattern] = route
