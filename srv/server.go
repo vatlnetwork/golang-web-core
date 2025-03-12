@@ -54,7 +54,7 @@ func (s *Server) Start() error {
 		}
 	}
 
-	s.HandleShutdown(&server)
+	s.RegisterHandleShutdown(&server)
 
 	util.LogColor("lightgreen", "Server listening on %v\n", addr)
 

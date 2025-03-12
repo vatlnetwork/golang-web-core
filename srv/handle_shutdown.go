@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (s *Server) HandleShutdown(httpServer *http.Server) {
+func (s *Server) RegisterHandleShutdown(httpServer *http.Server) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
