@@ -27,7 +27,7 @@ func NewServer(c cfg.Config) (*Server, error) {
 
 	err := server.RegisterRoutes()
 	if err != nil {
-		return &server, err
+		return nil, err
 	}
 
 	PrintServerConfig(&server)

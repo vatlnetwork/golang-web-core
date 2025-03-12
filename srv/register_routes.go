@@ -29,7 +29,7 @@ func (s *Server) RegisterRoutes() error {
 	}
 
 	if s.Config.PublicFS {
-		s.Mux.Handle("/public/", http.StripPrefix("/public/", FileServer{Prefix: "/public/", Handler: http.FileServer(http.Dir("public"))}))
+		s.Mux.Handle("GET /public/", http.StripPrefix("/public/", FileServer{Prefix: "/public/", Handler: http.FileServer(http.Dir("public"))}))
 	}
 
 	return nil
