@@ -71,10 +71,10 @@ func (m Mongo) Ping(client *mongo.Client, ctx context.Context) error {
 	return nil
 }
 
-func (m Mongo) InsertOne(client *mongo.Client, ctx context.Context, col string, doc interface{}) error {
+func (m Mongo) InsertOne(client *mongo.Client, ctx context.Context, col string, doc interface{}) (*mongo.InsertOneResult, error) {
 	collection := client.Database(m.Database).Collection(col)
-	_, err := collection.InsertOne(ctx, doc)
-	return err
+	res, err := collection.InsertOne(ctx, doc)
+	return res, err
 }
 
 func (m Mongo) InsertMany(client *mongo.Client, ctx context.Context, col string, docs []interface{}) error {
