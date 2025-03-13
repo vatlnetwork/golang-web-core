@@ -8,4 +8,5 @@ while true; do
   echo "PID: $PID"
   inotifywait -r -e modify .
   kill $PID
+  rm golang-web-core
 done
