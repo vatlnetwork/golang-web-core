@@ -9,5 +9,8 @@ func IsString(v any) bool {
 
 func IsStringEmpty(v any) bool {
 	s, ok := v.(string)
-	return ok && strings.TrimSpace(s) == ""
+	if !ok {
+		return true
+	}
+	return strings.TrimSpace(s) == ""
 }
