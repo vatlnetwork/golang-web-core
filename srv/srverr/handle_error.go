@@ -19,3 +19,8 @@ func Handle404(rw http.ResponseWriter, err error) {
 	http.Error(rw, err.Error(), http.StatusNotFound)
 	util.LogColor("yellow", "NOT FOUND: %v", err.Error())
 }
+
+func HandleError(code int, rw http.ResponseWriter, err error) {
+	http.Error(rw, err.Error(), code)
+	util.LogColor("red", "%v: %v", code, err.Error())
+}
