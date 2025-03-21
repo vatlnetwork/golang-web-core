@@ -9,35 +9,44 @@ import (
 	"strings"
 )
 
-func GetEnvironment() Config {
-	config := Development()
+type Environment string
 
-	// check to see if there are environment variables
+const (
+	Dev  Environment = "dev"
+	Prod Environment = "prod"
+)
+
+func GetEnvironment() Environment {
 	env := os.Getenv("GWC_ENV")
 	if env == "prod" || env == "production" {
-		config = Production()
+		return Prod
 	}
 
 	args := os.Args
-
-	// args override the env variables
 	for i, arg := range args {
 		if arg == "-e" {
 			env := args[i+1]
 			if env == "prod" {
-				config = Production()
-			}
-			if env == "dev" {
-				config = Development()
+				return Prod
 			}
 		}
 	}
 
-	return config
+	return Dev
+}
+
+func GetEnvironmentConfig() Config {
+	env := GetEnvironment()
+
+	if env == Prod {
+		return Production()
+	}
+
+	return Development()
 }
 
 func FromArgs() (Config, error) {
-	config := GetEnvironment()
+	config := GetEnvironmentConfig()
 
 	// check to see if there are environment variables
 	port := os.Getenv("GWC_PORT")

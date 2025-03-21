@@ -68,7 +68,7 @@ func (m TestModel) Create(object interface{}) (interface{}, error) {
 		defer mongoAdapter.Close(client, context, cancel)
 
 		// insert the record
-		err = mongoAdapter.InsertOne(client, context, m.Name(), object)
+		_, err = mongoAdapter.InsertOne(client, context, m.Name(), object)
 		if err != nil {
 			return nil, err
 		}

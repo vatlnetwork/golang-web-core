@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang-web-core/app/controllers"
 	"net/http"
+	"slices"
 )
 
 func (s *Server) RegisterRoutes() error {
@@ -13,19 +14,22 @@ func (s *Server) RegisterRoutes() error {
 	}
 	routes := s.Router.Routes(appController)
 
+	registeredPatterns := []string{}
+
 	for _, route := range routes {
-		existingRoute, ok := s.Routes[route.Pattern]
+		_, ok := s.Routes[route.Method+" "+route.Pattern]
 		if ok {
-			if existingRoute.Method == route.Method {
-				return fmt.Errorf("error: route pattern %v %v was registered twice", route.Method, route.Pattern)
-			}
+			return fmt.Errorf("error: route pattern %v %v was registered twice", route.Method, route.Pattern)
 		}
-		s.Routes[route.Pattern] = route
+		s.Routes[route.Method+" "+route.Pattern] = route
 
 		s.Mux.HandleFunc(fmt.Sprintf("%v %v", route.Method, route.Pattern), HandleRequest(appController, route))
-		if !ok {
+		patternRegistered := slices.Contains(registeredPatterns, route.Pattern)
+		if !patternRegistered {
 			s.Mux.HandleFunc(fmt.Sprintf("%v %v", http.MethodOptions, route.Pattern), http.HandlerFunc(HandleOptions))
 		}
+
+		registeredPatterns = append(registeredPatterns, route.Pattern)
 	}
 
 	if s.Config.PublicFS {
