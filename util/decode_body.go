@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func DecodeRequestBody(req *http.Request, decodeObject interface{}) error {
+func DecodeRequestBody(req *http.Request, decodeObject any) error {
 	bytes, err := io.ReadAll(req.Body)
 	if err != nil {
 		return err

@@ -50,7 +50,7 @@ func (m TestModel) PrimaryKey() string {
 	return "Id"
 }
 
-func (m TestModel) Create(object interface{}) (interface{}, error) {
+func (m TestModel) Create(object any) (any, error) {
 	// verify that object is a TestObject
 	_, isObject := object.(TestObject)
 	if !isObject {
@@ -93,7 +93,7 @@ func (m TestModel) Create(object interface{}) (interface{}, error) {
 	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
-func (m TestModel) Find(key interface{}) (interface{}, error) {
+func (m TestModel) Find(key any) (any, error) {
 	// make sure key is a string
 	_, isString := key.(string)
 	if !isString {
@@ -161,7 +161,7 @@ func (m TestModel) Find(key interface{}) (interface{}, error) {
 	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
-func (m TestModel) Where(query map[string]interface{}) (interface{}, error) {
+func (m TestModel) Where(query map[string]any) (any, error) {
 	// case for mongo adapter
 	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
 	if ok {
@@ -222,7 +222,7 @@ func (m TestModel) Where(query map[string]interface{}) (interface{}, error) {
 	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
-func (m TestModel) All() (interface{}, error) {
+func (m TestModel) All() (any, error) {
 	// case for mongo adapter
 	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
 	if ok {
@@ -274,7 +274,7 @@ func (m TestModel) All() (interface{}, error) {
 	return nil, ErrUnsupportedAdapter(m, m.adapter)
 }
 
-func (m TestModel) Update(key, object interface{}) error {
+func (m TestModel) Update(key, object any) error {
 	// verify key is a string
 	_, isString := key.(string)
 	if !isString {
@@ -335,7 +335,7 @@ func (m TestModel) Update(key, object interface{}) error {
 	return ErrUnsupportedAdapter(m, m.adapter)
 }
 
-func (m TestModel) UpdateWhere(query map[string]interface{}, object interface{}) error {
+func (m TestModel) UpdateWhere(query map[string]any, object any) error {
 	// verify object is a TestObject
 	_, isObject := object.(TestObject)
 	if !isObject {
@@ -400,7 +400,7 @@ func (m TestModel) UpdateWhere(query map[string]interface{}, object interface{})
 	return ErrUnsupportedAdapter(m, m.adapter)
 }
 
-func (m TestModel) Delete(key interface{}) error {
+func (m TestModel) Delete(key any) error {
 	// verify key is a string
 	_, isString := key.(string)
 	if !isString {
@@ -450,7 +450,7 @@ func (m TestModel) Delete(key interface{}) error {
 	return ErrUnsupportedAdapter(m, m.adapter)
 }
 
-func (m TestModel) DeleteWhere(query map[string]interface{}) error {
+func (m TestModel) DeleteWhere(query map[string]any) error {
 	// case for mongo adapter
 	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
 	if ok {
