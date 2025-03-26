@@ -37,10 +37,13 @@ func LogFatalf(format string, parts ...any) {
 }
 
 var Colors map[string]string = map[string]string{
-	"green":      "0;150;50",
-	"lightgreen": "100;255;150",
-	"red":        "255;0;0",
-	"blue":       "0;0;255",
-	"yellow":     "255;255;0",
-	"lightgray":  "200;200;200",
+	"green":       "0;150;50",
+	"lightgreen":  "100;255;150",
+	"red":         "255;0;0",
+	"blue":        "0;0;255",
+	"yellow":      "255;255;0",
+	"lightgray":   "200;200;200",
+	"lightblue":   "150;150;255",
+	"lightred":    "255;150;150",
+	"lightyellow": "255;255;150",
 }
