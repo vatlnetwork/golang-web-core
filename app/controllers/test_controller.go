@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"golang-web-core/app/models"
+	domain "golang-web-core/app/models/domain_objects"
 	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/render"
 	"golang-web-core/srv/route"
@@ -106,14 +107,14 @@ func (c TestController) TestMemberMethod(rw http.ResponseWriter, req *http.Reque
 // this section of the controller interacts with the models section of the web core
 
 func (c TestController) TestCreateMethod(rw http.ResponseWriter, req *http.Request) {
-	var inputObject models.TestObject
+	var inputObject domain.TestObject
 	err := util.DecodeRequestBody(req, &inputObject)
 	if err != nil {
 		srverr.Handle400(rw, err)
 		return
 	}
 
-	object := models.NewTestObject(inputObject.Number, inputObject.Boolean)
+	object := domain.NewTestObject(inputObject.Number, inputObject.Boolean)
 
 	testModel := models.NewTestModel(&c.Config.Database.Adapter)
 
@@ -123,7 +124,7 @@ func (c TestController) TestCreateMethod(rw http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	_, isTestObject := returnObject.(models.TestObject)
+	_, isTestObject := returnObject.(domain.TestObject)
 	if !isTestObject {
 		srverr.Handle500(rw, fmt.Errorf("the return object is not a TestObject"))
 		return
@@ -146,7 +147,7 @@ func (c TestController) TestReadMethod(rw http.ResponseWriter, req *http.Request
 		return
 	}
 
-	testObjects, ok := data.([]models.TestObject)
+	testObjects, ok := data.([]domain.TestObject)
 	if !ok {
 		srverr.Handle500(rw, fmt.Errorf("invalid data returned from the model"))
 		return
@@ -162,7 +163,7 @@ func (c TestController) TestReadMethod(rw http.ResponseWriter, req *http.Request
 }
 
 func (c TestController) TestUpdateMethod(rw http.ResponseWriter, req *http.Request) {
-	var object models.TestObject
+	var object domain.TestObject
 	err := util.DecodeRequestBody(req, &object)
 	if err != nil {
 		srverr.Handle400(rw, err)

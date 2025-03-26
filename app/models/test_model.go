@@ -2,31 +2,17 @@ package models
 
 import (
 	"fmt"
+	domain "golang-web-core/app/models/domain_objects"
 	databaseadapters "golang-web-core/srv/database_adapters"
 	"golang-web-core/srv/database_adapters/imdb"
 	"golang-web-core/srv/database_adapters/mongo"
 	"strings"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 // this line is here to verify that TestModel implements the Model interface
 var TestModelVerifier Model = TestModel{}
-
-type TestObject struct {
-	Id      string `json:"id"`
-	Number  int    `json:"number"`
-	Boolean bool   `json:"boolean"`
-}
-
-func NewTestObject(number int, boolean bool) TestObject {
-	return TestObject{
-		Id:      uuid.NewString(),
-		Number:  number,
-		Boolean: boolean,
-	}
-}
 
 type TestModel struct {
 	adapter *databaseadapters.DatabaseAdapter
@@ -52,7 +38,7 @@ func (m TestModel) PrimaryKey() string {
 
 func (m TestModel) Create(object any) (any, error) {
 	// verify that object is a TestObject
-	_, isObject := object.(TestObject)
+	_, isObject := object.(domain.TestObject)
 	if !isObject {
 		return nil, fmt.Errorf("the given object is not a TestObject")
 	}
@@ -123,7 +109,7 @@ func (m TestModel) Find(key any) (any, error) {
 		}
 
 		// decode the results from the mongo database
-		objects := []TestObject{}
+		objects := []domain.TestObject{}
 		err = cursor.All(context, &objects)
 		if err != nil {
 			return nil, err
@@ -148,7 +134,7 @@ func (m TestModel) Find(key any) (any, error) {
 		}
 
 		// verify the object is a TestObject
-		object, ok := iface.(TestObject)
+		object, ok := iface.(domain.TestObject)
 		if !ok {
 			return nil, fmt.Errorf("the returned object was not a TestObject")
 		}
@@ -185,7 +171,7 @@ func (m TestModel) Where(query map[string]any) (any, error) {
 		}
 
 		// decode the data from the db
-		objects := []TestObject{}
+		objects := []domain.TestObject{}
 		err = cursor.All(context, &objects)
 		if err != nil {
 			return nil, err
@@ -202,10 +188,10 @@ func (m TestModel) Where(query map[string]any) (any, error) {
 		records := imdbAdapter.Query(m.Name(), query)
 
 		// convert the records into TestObjects
-		results := []TestObject{}
+		results := []domain.TestObject{}
 		for _, record := range records {
 			// verify the record is a TestObject
-			obj, ok := record.(TestObject)
+			obj, ok := record.(domain.TestObject)
 			if !ok {
 				return nil, fmt.Errorf("found a record in the results that isn't a TestObject")
 			}
@@ -240,7 +226,7 @@ func (m TestModel) All() (any, error) {
 		}
 
 		// decode all of the records
-		objects := []TestObject{}
+		objects := []domain.TestObject{}
 		err = cursor.All(ctx, &objects)
 		if err != nil {
 			return nil, err
@@ -257,13 +243,13 @@ func (m TestModel) All() (any, error) {
 		objects := imdbAdapter.GetAll(m.Name())
 
 		// convert the results into TestObjects
-		results := []TestObject{}
+		results := []domain.TestObject{}
 		for _, object := range objects {
-			_, isObject := object.(TestObject)
+			_, isObject := object.(domain.TestObject)
 			if !isObject {
 				return nil, fmt.Errorf("found an object that is not a TestObject")
 			}
-			results = append(results, object.(TestObject))
+			results = append(results, object.(domain.TestObject))
 		}
 
 		// return the results
@@ -282,7 +268,7 @@ func (m TestModel) Update(key, object any) error {
 	}
 
 	// verify object is a TestObject
-	_, isObject := object.(TestObject)
+	_, isObject := object.(domain.TestObject)
 	if !isObject {
 		return fmt.Errorf("object must be a TestObject")
 	}
@@ -337,7 +323,7 @@ func (m TestModel) Update(key, object any) error {
 
 func (m TestModel) UpdateWhere(query map[string]any, object any) error {
 	// verify object is a TestObject
-	_, isObject := object.(TestObject)
+	_, isObject := object.(domain.TestObject)
 	if !isObject {
 		return fmt.Errorf("object must be a TestObject")
 	}
@@ -382,7 +368,7 @@ func (m TestModel) UpdateWhere(query map[string]any, object any) error {
 		if err != nil {
 			return err
 		}
-		objects := records.([]TestObject)
+		objects := records.([]domain.TestObject)
 
 		// update each object matching the query with the new object
 		for _, obj := range objects {
@@ -485,7 +471,7 @@ func (m TestModel) DeleteWhere(query map[string]any) error {
 		if err != nil {
 			return err
 		}
-		objects := records.([]TestObject)
+		objects := records.([]domain.TestObject)
 
 		// delete each object from the memory collection
 		for _, object := range objects {
