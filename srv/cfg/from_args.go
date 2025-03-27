@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 type Environment string
@@ -46,6 +48,11 @@ func GetEnvironmentConfig() Config {
 }
 
 func FromArgs() (Config, error) {
+	err := godotenv.Load()
+	if err != nil {
+		return Config{}, err
+	}
+
 	config := GetEnvironmentConfig()
 
 	// check to see if there are environment variables
