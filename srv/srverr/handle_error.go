@@ -12,7 +12,12 @@ func Handle400(rw http.ResponseWriter, err error) {
 
 func Handle401(rw http.ResponseWriter, err error) {
 	http.Error(rw, err.Error(), http.StatusUnauthorized)
-	util.LogColor("yellow", "UNAUTHORIZED: %v", err.Error())
+	util.LogColor("lightred", "UNAUTHORIZED: %v", err.Error())
+}
+
+func Handle403(rw http.ResponseWriter, err error) {
+	http.Error(rw, err.Error(), http.StatusForbidden)
+	util.LogColor("lightred", "FORBIDDEN: %v", err.Error())
 }
 
 func Handle404(rw http.ResponseWriter, err error) {
