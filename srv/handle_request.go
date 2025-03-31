@@ -14,6 +14,8 @@ func HandleRequest(appController controllers.ApplicationController, route route.
 		controller := appController.Controllers[route.ControllerName]
 
 		appController.BeforeAction(controller.BeforeAction(route.Handler))(rw, req)
+
+		logFinished(rw, req)
 	}
 }
 
@@ -47,4 +49,12 @@ func logRequest(req *http.Request) {
 	}
 
 	log.Printf("Started \033[38;2;%vm%v\033[0m %v for %v\n", color, req.Method, req.URL.Path, req.RemoteAddr)
+}
+
+func logFinished(rw http.ResponseWriter, req *http.Request) {
+	if rw.Header().Get("Content-Type") == "text/plain; charset=utf-8" {
+		log.Printf("%v %v finished with error, remote address: %v\n", req.Method, req.URL.Path, req.RemoteAddr)
+	} else {
+		log.Printf("Finished %v %v for %v\n", req.Method, req.URL.Path, req.RemoteAddr)
+	}
 }

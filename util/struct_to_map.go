@@ -2,8 +2,8 @@ package util
 
 import "reflect"
 
-func StructToMap(inputStruct interface{}) map[string]interface{} {
-	result := make(map[string]interface{})
+func StructToMap(inputStruct any) map[string]any {
+	result := make(map[string]any)
 	val := reflect.ValueOf(inputStruct)
 
 	if val.Kind() == reflect.Ptr {

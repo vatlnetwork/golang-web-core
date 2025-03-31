@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-func ErrUnsupportedAdapter(model interface{}, adapter *databaseadapters.DatabaseAdapter) error {
+func ErrUnsupportedAdapter(model any, adapter *databaseadapters.DatabaseAdapter) error {
 	name := reflect.TypeOf(model).Name()
 	val := reflect.ValueOf(adapter)
 	elem := val.Elem()

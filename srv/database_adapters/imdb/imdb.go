@@ -9,13 +9,13 @@ import (
 
 type Imdb struct {
 	databaseadapters.ConnectionConfig
-	Data map[string][]interface{}
+	Data map[string][]any
 }
 
 func NewImdbAdapter() Imdb {
 	return Imdb{
 		ConnectionConfig: DefaultConfig(),
-		Data:             map[string][]interface{}{},
+		Data:             map[string][]any{},
 	}
 }
 
@@ -31,27 +31,27 @@ func (db Imdb) TestConnection() error {
 	return nil
 }
 
-func (db *Imdb) Insert(modelName string, object interface{}) {
+func (db *Imdb) Insert(modelName string, object any) {
 	collection, ok := db.Data[modelName]
 	if !ok {
-		collection = []interface{}{}
+		collection = []any{}
 	}
 	collection = append(collection, object)
 	db.Data[modelName] = collection
 }
 
-func (db *Imdb) GetAll(modelName string) []interface{} {
+func (db *Imdb) GetAll(modelName string) []any {
 	collection, ok := db.Data[modelName]
 	if !ok {
-		collection = []interface{}{}
+		collection = []any{}
 	}
 	return collection
 }
 
-func (db *Imdb) Find(modelName, key string, value interface{}) (interface{}, error) {
+func (db *Imdb) Find(modelName, key string, value any) (any, error) {
 	collection, ok := db.Data[modelName]
 	if !ok {
-		collection = []interface{}{}
+		collection = []any{}
 	}
 	for _, item := range collection {
 		json := util.StructToMap(item)
@@ -60,15 +60,15 @@ func (db *Imdb) Find(modelName, key string, value interface{}) (interface{}, err
 		}
 	}
 
-	return nil, fmt.Errorf("Unable to find a %v with %v = %v", modelName, key, value)
+	return nil, fmt.Errorf("unable to find a %v with %v = %v", modelName, key, value)
 }
 
-func (db *Imdb) Query(modelName string, query map[string]interface{}) []interface{} {
+func (db *Imdb) Query(modelName string, query map[string]any) []any {
 	collection, ok := db.Data[modelName]
 	if !ok {
-		collection = []interface{}{}
+		collection = []any{}
 	}
-	results := []interface{}{}
+	results := []any{}
 	for _, item := range collection {
 		json := util.StructToMap(item)
 		matches := true
@@ -84,12 +84,12 @@ func (db *Imdb) Query(modelName string, query map[string]interface{}) []interfac
 	return results
 }
 
-func (db *Imdb) Update(modelName, primaryKey string, keyValue, object interface{}) error {
+func (db *Imdb) Update(modelName, primaryKey string, keyValue any, object any) error {
 	collection, ok := db.Data[modelName]
 	if !ok {
-		collection = []interface{}{}
+		collection = []any{}
 	}
-	updatedCollection := []interface{}{}
+	updatedCollection := []any{}
 	found := false
 	for _, item := range collection {
 		json := util.StructToMap(item)
@@ -101,18 +101,18 @@ func (db *Imdb) Update(modelName, primaryKey string, keyValue, object interface{
 		}
 	}
 	if !found {
-		return fmt.Errorf("Unable to find a %v with %v = %v", modelName, primaryKey, keyValue)
+		return fmt.Errorf("unable to find a %v with %v = %v", modelName, primaryKey, keyValue)
 	}
 	db.Data[modelName] = updatedCollection
 	return nil
 }
 
-func (db *Imdb) Delete(modelName, primaryKey string, keyValue interface{}) error {
+func (db *Imdb) Delete(modelName, primaryKey string, keyValue any) error {
 	collection, ok := db.Data[modelName]
 	if !ok {
-		collection = []interface{}{}
+		collection = []any{}
 	}
-	updatedCollection := []interface{}{}
+	updatedCollection := []any{}
 	found := false
 	for _, item := range collection {
 		json := util.StructToMap(item)
@@ -123,7 +123,7 @@ func (db *Imdb) Delete(modelName, primaryKey string, keyValue interface{}) error
 		}
 	}
 	if !found {
-		return fmt.Errorf("Unable to find a %v with %v = %v", modelName, primaryKey, keyValue)
+		return fmt.Errorf("unable to find a %v with %v = %v", modelName, primaryKey, keyValue)
 	}
 	db.Data[modelName] = updatedCollection
 	return nil
