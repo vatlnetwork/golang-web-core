@@ -56,7 +56,6 @@ func (c ApplicationController) setupControllers() error {
 		c,
 		// this is where you initialize your controllers. if you do not initialize your controllers here, they will not be usable
 		NewTestController(c.Config),
-		NewTransactionsController(c.Config),
 	}
 
 	// everything below here should be left untouched

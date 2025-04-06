@@ -34,8 +34,5 @@ func (r Router) Routes(appController controllers.ApplicationController) []route.
 
 	routes = append(routes, testController.Routes()...)
 
-	transactionsController := appController.GetController("TransactionsController").(controllers.TransactionsController)
-	routes = append(routes, transactionsController.Routes()...)
-
 	return routes
 }
