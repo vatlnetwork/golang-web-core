@@ -5,8 +5,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"golang-web-core/app/domain"
 	"golang-web-core/app/models"
-	domain "golang-web-core/app/models/domain_objects"
 	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/render"
 	"golang-web-core/srv/route"

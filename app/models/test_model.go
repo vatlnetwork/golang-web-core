@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	domain "golang-web-core/app/models/domain_objects"
+	"golang-web-core/app/domain"
 	databaseadapters "golang-web-core/srv/database_adapters"
 	"golang-web-core/srv/database_adapters/imdb"
 	"golang-web-core/srv/database_adapters/mongo"
