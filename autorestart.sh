@@ -43,5 +43,5 @@ while true; do
   
   # Clean up
   rm $TMP_STATUS
-  rm webstore 2>/dev/null || true
+  rm golang-web-core 2>/dev/null || true
 done
