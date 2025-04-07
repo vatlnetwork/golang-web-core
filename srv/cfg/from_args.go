@@ -92,7 +92,7 @@ func FromArgs() (Config, error) {
 		config.Database.Adapter = imdb.NewImdbAdapter()
 		config.Database.Connection = config.Database.Adapter.Connection()
 	case "mongo":
-		config.Database.Adapter = mongo.NewMongoAdapter()
+		config.Database.Adapter = mongo.NewMongoAdapter(config.Environment == Dev)
 		config.Database.Connection = config.Database.Adapter.Connection()
 	case "none":
 		config.Database.Adapter = nil
@@ -146,7 +146,7 @@ func FromArgs() (Config, error) {
 				config.Database.Adapter = imdb.NewImdbAdapter()
 				config.Database.Connection = config.Database.Adapter.Connection()
 			case "mongo":
-				config.Database.Adapter = mongo.NewMongoAdapter()
+				config.Database.Adapter = mongo.NewMongoAdapter(config.Environment == Dev)
 				config.Database.Connection = config.Database.Adapter.Connection()
 			}
 		}

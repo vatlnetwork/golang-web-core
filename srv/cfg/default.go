@@ -9,8 +9,9 @@ func Default() Config {
 	dbAdapter := imdb.NewImdbAdapter()
 
 	return Config{
-		Port:     3000,
-		PublicFS: true,
+		Port:        3000,
+		PublicFS:    true,
+		Environment: Dev,
 		Database: databaseadapters.DatabaseConfig{
 			Adapter:    dbAdapter,
 			Connection: dbAdapter.ConnectionConfig,

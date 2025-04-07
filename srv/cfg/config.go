@@ -7,10 +7,11 @@ import (
 )
 
 type Config struct {
-	Port     int
-	SSL      SSL
-	PublicFS bool
-	Database databaseadapters.DatabaseConfig
+	Port        int
+	SSL         SSL
+	PublicFS    bool
+	Environment Environment
+	Database    databaseadapters.DatabaseConfig
 }
 
 func (c Config) IsSSL() bool {

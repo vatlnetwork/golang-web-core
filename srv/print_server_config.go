@@ -15,6 +15,7 @@ func PrintServerConfig(server *Server) {
 		fmt.Printf("      Key Path: %v\n", c.SSL.KeyPath)
 	}
 	fmt.Printf("   Public FS Enabled: %v\n", c.PublicFS)
+	fmt.Printf("   Environment: %v\n", c.Environment)
 	fmt.Printf("   Database Enabled: %v\n", c.Database.UsingDatabase())
 	if c.Database.UsingDatabase() {
 		fmt.Printf("      Adapter: %v\n", c.Database.Adapter.Name())

@@ -1,15 +1,35 @@
 package srv
 
 import (
+	"fmt"
 	"golang-web-core/app/controllers"
+	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/route"
+	"golang-web-core/util"
 	"log"
 	"net/http"
+	"time"
 )
+
+func SetRequestID(req *http.Request) {
+	requestId := time.Now().UnixMilli()
+	requestIdStr := fmt.Sprintf("%v", requestId)
+
+	req.Header.Set("X-Request-ID", requestIdStr)
+}
 
 func HandleRequest(appController controllers.ApplicationController, route route.Route) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
+		SetRequestID(req)
+
 		logRequest(req)
+
+		if appController.Config.Environment == cfg.Dev {
+			params, err := util.GetParams(req)
+			if err == nil {
+				log.Printf("%v Params: %v\n", req.Header.Get("X-Request-ID"), params)
+			}
+		}
 
 		controller := appController.Controllers[route.ControllerName]
 
@@ -48,13 +68,16 @@ func logRequest(req *http.Request) {
 		color = "255;0;0"
 	}
 
-	log.Printf("Started \033[38;2;%vm%v\033[0m %v for %v\n", color, req.Method, req.URL.Path, req.RemoteAddr)
+	requestID := req.Header.Get("X-Request-ID")
+	log.Printf("%v Started \033[38;2;%vm%v\033[0m %v for %v\n", requestID, color, req.Method, req.URL.Path, req.RemoteAddr)
 }
 
 func logFinished(rw http.ResponseWriter, req *http.Request) {
+	requestID := req.Header.Get("X-Request-ID")
+
 	if rw.Header().Get("Content-Type") == "text/plain; charset=utf-8" {
-		log.Printf("%v %v finished with error, remote address: %v\n", req.Method, req.URL.Path, req.RemoteAddr)
+		log.Printf("%v %v %v finished with error, remote address: %v\n", requestID, req.Method, req.URL.Path, req.RemoteAddr)
 	} else {
-		log.Printf("Finished %v %v for %v\n", req.Method, req.URL.Path, req.RemoteAddr)
+		log.Printf("%v Finished %v %v for %v\n", requestID, req.Method, req.URL.Path, req.RemoteAddr)
 	}
 }
