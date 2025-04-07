@@ -6,3 +6,9 @@ type TransactionGroup struct {
 	Id          bson.ObjectID `json:"id" bson:"_id,omitempty"`
 	Description string        `json:"description" bson:"description"`
 }
+
+func NewTransactionGroup(description string) TransactionGroup {
+	return TransactionGroup{
+		Description: description,
+	}
+}
