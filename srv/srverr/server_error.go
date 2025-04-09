@@ -17,6 +17,18 @@ func New(message string, code ...int) ServerError {
 	}
 }
 
+func Wrap(err error, code ...int) ServerError {
+	actualCode := 500
+	if len(code) > 0 {
+		actualCode = code[0]
+	}
+
+	return ServerError{
+		Message: err.Error(),
+		Code:    actualCode,
+	}
+}
+
 func (e ServerError) Error() string {
 	return e.Message
 }
