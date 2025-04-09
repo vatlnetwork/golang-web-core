@@ -40,5 +40,8 @@ func (r Router) Routes(appController controllers.ApplicationController) []route.
 	transactionGroupsController := appController.GetController("TransactionGroupsController").(controllers.TransactionGroupsController)
 	routes = append(routes, transactionGroupsController.Routes()...)
 
+	authController := appController.GetController("AuthController").(controllers.AuthController)
+	routes = append(routes, authController.Routes()...)
+
 	return routes
 }

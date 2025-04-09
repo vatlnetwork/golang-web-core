@@ -58,6 +58,7 @@ func (c ApplicationController) setupControllers() error {
 		NewTestController(c.Config),
 		NewTransactionsController(c.Config),
 		NewTransactionGroupsController(c.Config),
+		NewAuthController(c.Config),
 	}
 
 	// everything below here should be left untouched

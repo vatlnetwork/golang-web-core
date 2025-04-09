@@ -36,7 +36,20 @@ func (a AuthController) Name() string {
 }
 
 func (a AuthController) Routes() []route.Route {
-	return []route.Route{}
+	return []route.Route{
+		{
+			Pattern:        "/auth/local/login",
+			Method:         http.MethodPost,
+			Handler:        a.LocalLogin,
+			ControllerName: a.Name(),
+		},
+		{
+			Pattern:        "/auth/local/signup",
+			Method:         http.MethodPost,
+			Handler:        a.LocalSignUp,
+			ControllerName: a.Name(),
+		},
+	}
 }
 
 func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
