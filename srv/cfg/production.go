@@ -7,8 +7,8 @@ func Production() Config {
 
 	config.Environment = Prod
 
-	config.Database.Adapter = mongo.NewMongoAdapter(false)
-	config.Database.Connection = config.Database.Adapter.Connection()
+	config.Database.Connection = mongo.DefaultConfig()
+	config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, false)
 
 	return config
 }

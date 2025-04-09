@@ -6,7 +6,7 @@ import (
 )
 
 func Default() Config {
-	dbAdapter := imdb.NewImdbAdapter()
+	dbAdapter := imdb.NewImdbAdapter(imdb.DefaultConfig())
 
 	return Config{
 		Port:        3000,
