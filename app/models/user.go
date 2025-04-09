@@ -28,7 +28,7 @@ func (u UserModel) Adapter() *databaseadapters.DatabaseAdapter {
 
 // All implements Model.
 func (u UserModel) All() (any, error) {
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -77,7 +77,7 @@ func (u UserModel) Create(object any) (any, error) {
 		return nil, srverr.New("User with this email already exists", http.StatusBadRequest)
 	}
 
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -121,7 +121,7 @@ func (u UserModel) Delete(key any) error {
 		return err
 	}
 
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -169,7 +169,7 @@ func (u UserModel) DeleteWhere(query map[string]any) error {
 		}
 	}
 
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -200,7 +200,7 @@ func (u UserModel) Find(key any) (any, error) {
 		return nil, srverr.New("key must be a string")
 	}
 
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -301,7 +301,7 @@ func (u UserModel) Update(key any, object any) error {
 		}
 	}
 
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -346,7 +346,7 @@ func (u UserModel) UpdateWhere(query map[string]any, object any) error {
 		isUser = true // Mark as valid if it's a pointer
 	}
 
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -377,7 +377,7 @@ func (u UserModel) UpdateWhere(query map[string]any, object any) error {
 
 // Where implements Model.
 func (u UserModel) Where(query map[string]any) (any, error) {
-	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*u.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {

@@ -44,8 +44,20 @@ func (a AuthController) Routes() []route.Route {
 			ControllerName: a.Name(),
 		},
 		{
+			Pattern:        "/auth/local/login",
+			Method:         http.MethodGet,
+			Handler:        a.LocalLogin,
+			ControllerName: a.Name(),
+		},
+		{
 			Pattern:        "/auth/local/signup",
 			Method:         http.MethodPost,
+			Handler:        a.LocalSignUp,
+			ControllerName: a.Name(),
+		},
+		{
+			Pattern:        "/auth/local/signup",
+			Method:         http.MethodGet,
 			Handler:        a.LocalSignUp,
 			ControllerName: a.Name(),
 		},
@@ -53,6 +65,12 @@ func (a AuthController) Routes() []route.Route {
 			Pattern:        "/auth/current_user",
 			Method:         http.MethodGet,
 			Handler:        a.CurrentUser,
+			ControllerName: a.Name(),
+		},
+		{
+			Pattern:        "/auth/logout",
+			Method:         http.MethodGet,
+			Handler:        a.Logout,
 			ControllerName: a.Name(),
 		},
 		{
@@ -112,7 +130,7 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if params["remember_me"] == true {
+	if params["rememberMe"] == true {
 		session.Expires = false
 	}
 
@@ -143,6 +161,8 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (a AuthController) LocalSignUp(rw http.ResponseWriter, req *http.Request) {
+	fmt.Println(a.Database.Connection.Database)
+
 	params, err := util.GetParams(req)
 	if err != nil {
 		srverr.Handle400(rw, err)
@@ -160,11 +180,11 @@ func (a AuthController) LocalSignUp(rw http.ResponseWriter, req *http.Request) {
 	if params["password"] != nil {
 		password = params["password"].(string)
 	}
-	if params["first_name"] != nil {
-		firstName = params["first_name"].(string)
+	if params["firstName"] != nil {
+		firstName = params["firstName"].(string)
 	}
-	if params["last_name"] != nil {
-		lastName = params["last_name"].(string)
+	if params["lastName"] != nil {
+		lastName = params["lastName"].(string)
 	}
 
 	if firstName == "" || lastName == "" {
@@ -202,6 +222,11 @@ func (a AuthController) CurrentUser(rw http.ResponseWriter, req *http.Request) {
 func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {
 	user := util.GetContextUser(req)
 	if user == nil {
+		if req.Method == http.MethodGet {
+			http.Redirect(rw, req, "/auth/current_user", http.StatusTemporaryRedirect)
+			return
+		}
+
 		rw.WriteHeader(http.StatusNoContent)
 		rw.Write([]byte(""))
 		return
@@ -211,6 +236,11 @@ func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {
 	err := sessionModel.DeleteWhere(map[string]any{"userId": user.Id})
 	if err != nil {
 		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	if req.Method == http.MethodGet {
+		http.Redirect(rw, req, "/auth/current_user", http.StatusTemporaryRedirect)
 		return
 	}
 

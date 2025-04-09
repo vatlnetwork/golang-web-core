@@ -26,7 +26,7 @@ func (t TransactionGroupModel) Adapter() *databaseadapters.DatabaseAdapter {
 
 // All implements Model.
 func (t TransactionGroupModel) All() (any, error) {
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -58,7 +58,7 @@ func (t TransactionGroupModel) Create(object any) (any, error) {
 		return nil, fmt.Errorf("the given object is not a TransactionGroup")
 	}
 
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -87,7 +87,7 @@ func (t TransactionGroupModel) Delete(key any) error {
 		return fmt.Errorf("key must be a string")
 	}
 
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -117,7 +117,7 @@ func (t TransactionGroupModel) Delete(key any) error {
 
 // DeleteWhere implements Model.
 func (t TransactionGroupModel) DeleteWhere(query map[string]any) error {
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -148,7 +148,7 @@ func (t TransactionGroupModel) Find(key any) (any, error) {
 		return nil, fmt.Errorf("key must be a string")
 	}
 
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -208,7 +208,7 @@ func (t TransactionGroupModel) Update(key any, object any) error {
 		return fmt.Errorf("the given object is not a TransactionGroup")
 	}
 
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -247,7 +247,7 @@ func (t TransactionGroupModel) UpdateWhere(query map[string]any, object any) err
 		return fmt.Errorf("the given object is not a TransactionGroup")
 	}
 
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -277,7 +277,7 @@ func (t TransactionGroupModel) UpdateWhere(query map[string]any, object any) err
 
 // Where implements Model.
 func (t TransactionGroupModel) Where(query map[string]any) (any, error) {
-	mongoAdapter, ok := (*t.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*t.adapter).(*mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
