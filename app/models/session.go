@@ -5,6 +5,8 @@ import (
 	"golang-web-core/app/domain"
 	databaseadapters "golang-web-core/srv/database_adapters"
 	"golang-web-core/srv/database_adapters/mongo"
+	"golang-web-core/srv/srverr"
+	"net/http"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -30,19 +32,19 @@ func (s SessionModel) All() (any, error) {
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		cursor, err := mongoAdapter.Query(client, ctx, s.Name(), bson.M{}, nil)
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 
 		sessions := []domain.Session{}
 		err = cursor.All(ctx, &sessions)
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 
 		return sessions, nil
@@ -62,7 +64,7 @@ func (s SessionModel) Create(object any) (any, error) {
 			session = *sessionPtr
 			isSession = true
 		} else {
-			return nil, fmt.Errorf("the given object is not a Session or *Session")
+			return nil, srverr.New("the given object is not a Session or *Session")
 		}
 	}
 
@@ -70,13 +72,13 @@ func (s SessionModel) Create(object any) (any, error) {
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		res, err := mongoAdapter.InsertOne(client, ctx, s.Name(), object)
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 
 		session.Id = res.InsertedID.(bson.ObjectID)
@@ -90,20 +92,20 @@ func (s SessionModel) Create(object any) (any, error) {
 func (s SessionModel) Delete(key any) error {
 	keyStr, isString := key.(string)
 	if !isString {
-		return fmt.Errorf("key must be a string (ObjectID hex)")
+		return srverr.New("key must be a string (ObjectID hex)")
 	}
 
 	mongoAdapter, ok := s.adapter.(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		objectId, err := bson.ObjectIDFromHex(keyStr)
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 
 		filter := bson.M{
@@ -112,7 +114,7 @@ func (s SessionModel) Delete(key any) error {
 
 		err = mongoAdapter.DeleteOne(client, ctx, s.Name(), filter)
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 
 		return nil
@@ -127,18 +129,18 @@ func (s SessionModel) DeleteWhere(query map[string]any) error {
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		filter, err := convertSessionQueryIDs(query)
 		if err != nil {
-			return fmt.Errorf("error processing query for DeleteWhere: %w", err)
+			return srverr.Wrap(err)
 		}
 
 		err = mongoAdapter.DeleteMany(client, ctx, s.Name(), filter)
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 
 		return nil
@@ -161,7 +163,7 @@ func (s SessionModel) Find(key any) (any, error) {
 			// If not found by token or error occurred, proceed to check if it's an ID
 			// Fall through to ObjectID check below
 		} else {
-			return nil, fmt.Errorf("key must be a string (ObjectID hex or session token)")
+			return nil, srverr.New("key must be a string (ObjectID hex or session token)")
 		}
 	}
 
@@ -171,7 +173,7 @@ func (s SessionModel) Find(key any) (any, error) {
 		if ok {
 			client, ctx, cancel, err := mongoAdapter.Connect()
 			if err != nil {
-				return nil, err
+				return nil, srverr.Wrap(err)
 			}
 			defer mongoAdapter.Close(client, ctx, cancel)
 
@@ -180,26 +182,26 @@ func (s SessionModel) Find(key any) (any, error) {
 				filter := bson.M{s.PrimaryKey(): objectId}
 				cursor, err := mongoAdapter.Query(client, ctx, s.Name(), filter, nil)
 				if err != nil {
-					return nil, err
+					return nil, srverr.Wrap(err)
 				}
 				sessions := []domain.Session{}
 				err = cursor.All(ctx, &sessions)
 				if err != nil {
-					return nil, err
+					return nil, srverr.Wrap(err)
 				}
 				if len(sessions) > 0 {
 					return sessions[0], nil
 				}
 			}
 			// If ObjectID conversion failed OR no session found by ID, report specific error
-			return nil, fmt.Errorf("unable to find a Session with %s = %v or token = %v", s.PrimaryKey(), keyStr, keyStr)
+			return nil, srverr.New(fmt.Sprintf("unable to find a Session with %s = %v or token = %v", s.PrimaryKey(), keyStr, keyStr), http.StatusNotFound)
 
 		}
 		return nil, ErrUnsupportedAdapter(s, &s.adapter)
 	}
 
 	// Should not be reached if logic is correct, but return general error
-	return nil, fmt.Errorf("unable to find session with key: %v", key)
+	return nil, srverr.New(fmt.Sprintf("unable to find session with key: %v", key), http.StatusNotFound)
 }
 
 // FindByToken specifically finds a session by its token string.
@@ -211,24 +213,24 @@ func (s SessionModel) FindByToken(token string) (*domain.Session, error) {
 
 	client, ctx, cancel, err := mongoAdapter.Connect()
 	if err != nil {
-		return nil, err
+		return nil, srverr.Wrap(err)
 	}
 	defer mongoAdapter.Close(client, ctx, cancel)
 
 	filter := bson.M{"token": token}
 	cursor, err := mongoAdapter.Query(client, ctx, s.Name(), filter, nil)
 	if err != nil {
-		return nil, err
+		return nil, srverr.Wrap(err)
 	}
 
 	sessions := []domain.Session{}
 	err = cursor.All(ctx, &sessions)
 	if err != nil {
-		return nil, err
+		return nil, srverr.Wrap(err)
 	}
 
 	if len(sessions) == 0 {
-		return nil, fmt.Errorf("no session found with token: %s", token) // Specific error
+		return nil, srverr.New(fmt.Sprintf("no session found with token: %s", token), http.StatusNotFound) // Specific error
 	}
 	if len(sessions) > 1 {
 		// This shouldn't happen if tokens are unique, but good to log
@@ -252,7 +254,7 @@ func (s SessionModel) PrimaryKey() string {
 func (s SessionModel) Update(key any, object any) error {
 	keyStr, isString := key.(string)
 	if !isString {
-		return fmt.Errorf("key must be a string (ObjectID hex)")
+		return srverr.New("key must be a string (ObjectID hex)")
 	}
 
 	isValidSessionType := false
@@ -262,20 +264,20 @@ func (s SessionModel) Update(key any, object any) error {
 		isValidSessionType = true
 	}
 	if !isValidSessionType {
-		return fmt.Errorf("the given object is not a Session or *Session")
+		return srverr.New("the given object is not a Session or *Session")
 	}
 
 	mongoAdapter, ok := s.adapter.(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		objectId, err := bson.ObjectIDFromHex(keyStr)
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 
 		filter := bson.M{
@@ -288,7 +290,7 @@ func (s SessionModel) Update(key any, object any) error {
 
 		err = mongoAdapter.UpdateOne(client, ctx, s.Name(), filter, update)
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 
 		return nil
@@ -306,20 +308,20 @@ func (s SessionModel) UpdateWhere(query map[string]any, object any) error {
 		isValidSessionType = true
 	}
 	if !isValidSessionType {
-		return fmt.Errorf("the given object is not a Session or *Session")
+		return srverr.New("the given object is not a Session or *Session")
 	}
 
 	mongoAdapter, ok := s.adapter.(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		filter, err := convertSessionQueryIDs(query)
 		if err != nil {
-			return fmt.Errorf("error processing query for UpdateWhere: %w", err)
+			return srverr.Wrap(err)
 		}
 
 		update := bson.M{
@@ -328,7 +330,7 @@ func (s SessionModel) UpdateWhere(query map[string]any, object any) error {
 
 		err = mongoAdapter.UpdateMany(client, ctx, s.Name(), filter, update)
 		if err != nil {
-			return err
+			return srverr.Wrap(err)
 		}
 
 		return nil
@@ -343,24 +345,24 @@ func (s SessionModel) Where(query map[string]any) (any, error) {
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 		defer mongoAdapter.Close(client, ctx, cancel)
 
 		filter, err := convertSessionQueryIDs(query)
 		if err != nil {
-			return nil, fmt.Errorf("error processing query for Where: %w", err)
+			return nil, srverr.Wrap(err)
 		}
 
 		cursor, err := mongoAdapter.Query(client, ctx, s.Name(), filter, nil)
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 
 		sessions := []domain.Session{}
 		err = cursor.All(ctx, &sessions)
 		if err != nil {
-			return nil, err
+			return nil, srverr.Wrap(err)
 		}
 
 		return sessions, nil
