@@ -18,8 +18,8 @@ type Mongo struct {
 	LogTransactions bool
 }
 
-func NewMongoAdapter(connectionConfig databaseadapters.ConnectionConfig, logTransactions bool) Mongo {
-	return Mongo{
+func NewMongoAdapter(connectionConfig databaseadapters.ConnectionConfig, logTransactions bool) *Mongo {
+	return &Mongo{
 		ConnectionConfig: connectionConfig,
 		LogTransactions:  logTransactions,
 	}
@@ -39,6 +39,10 @@ func (m Mongo) ConnectionString() string {
 		authAndHost = fmt.Sprintf("%v:%v@%v", m.Username, m.Password, m.Hostname)
 	}
 	return fmt.Sprintf("mongodb://%v/%v", authAndHost, m.Database)
+}
+
+func (m *Mongo) ApplyConfig(config databaseadapters.ConnectionConfig) {
+	m.ConnectionConfig = config
 }
 
 func (m Mongo) TestConnection() error {
