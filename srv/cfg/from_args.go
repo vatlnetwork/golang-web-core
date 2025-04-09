@@ -66,12 +66,15 @@ func FromArgs() (Config, error) {
 	databaseUsername := os.Getenv("GWC_DB_USERNAME")
 	databasePassword := os.Getenv("GWC_DB_PASSWORD")
 
+	// port
 	if port != "" {
 		portNum, err := strconv.Atoi(port)
 		if err == nil {
 			config.Port = portNum
 		}
 	}
+
+	// ssl
 	if certPath != "" {
 		err := config.SSL.SetCertPath(certPath)
 		if err != nil {
@@ -84,8 +87,18 @@ func FromArgs() (Config, error) {
 			return config, err
 		}
 	}
+
+	// public fs
 	if strings.ToLower(enablePublicFS) == "false" || strings.ToLower(enablePublicFS) == "no" {
 		config.PublicFS = false
+	}
+
+	// database
+	switch databaseAdapter {
+	case "imdb":
+		config.Database.Connection = imdb.DefaultConfig()
+	case "mongo":
+		config.Database.Connection = mongo.DefaultConfig()
 	}
 	if databaseHostname != "" {
 		config.Database.Connection.Hostname = databaseHostname
@@ -153,9 +166,9 @@ func FromArgs() (Config, error) {
 		if arg == "--db-adapter" {
 			switch args[i+1] {
 			case "imdb":
-				config.Database.Adapter = imdb.NewImdbAdapter(config.Database.Connection)
+				config.Database.Adapter = imdb.NewImdbAdapter(imdb.DefaultConfig())
 			case "mongo":
-				config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, config.Environment == Dev)
+				config.Database.Adapter = mongo.NewMongoAdapter(mongo.DefaultConfig(), config.Environment == Dev)
 			}
 		}
 		if arg == "--no-db" {
