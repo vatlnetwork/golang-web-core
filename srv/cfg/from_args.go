@@ -166,9 +166,11 @@ func FromArgs() (Config, error) {
 		if arg == "--db-adapter" {
 			switch args[i+1] {
 			case "imdb":
+				config.Database.Connection = imdb.DefaultConfig()
 				config.Database.Adapter = imdb.NewImdbAdapter(imdb.DefaultConfig())
 			case "mongo":
-				config.Database.Adapter = mongo.NewMongoAdapter(mongo.DefaultConfig(), config.Environment == Dev)
+				config.Database.Connection = mongo.DefaultConfig()
+				config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, config.Environment == Dev)
 			}
 		}
 		if arg == "--no-db" {
