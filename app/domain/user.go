@@ -2,8 +2,6 @@ package domain
 
 import (
 	"fmt"
-	"golang-web-core/srv/srverr"
-	"net/http"
 	"regexp"
 	"time"
 
@@ -29,11 +27,11 @@ type User struct {
 
 func NewUser(email, firstName, lastName, password string) (User, error) {
 	if len(password) < minPasswordLength || len(password) > maxPasswordLength {
-		return User{}, srverr.New(fmt.Sprintf("password must be between %d and %d characters", minPasswordLength, maxPasswordLength), http.StatusBadRequest)
+		return User{}, fmt.Errorf("password must be between %d and %d characters", minPasswordLength, maxPasswordLength)
 	}
 
 	if !regexp.MustCompile(emailRegex).MatchString(email) {
-		return User{}, srverr.New("invalid email address", http.StatusBadRequest)
+		return User{}, fmt.Errorf("invalid email address")
 	}
 
 	user := User{
@@ -46,7 +44,7 @@ func NewUser(email, firstName, lastName, password string) (User, error) {
 
 	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return User{}, srverr.Wrap(err)
+		return User{}, err
 	}
 
 	user.EncryptedPassword = encryptedPassword

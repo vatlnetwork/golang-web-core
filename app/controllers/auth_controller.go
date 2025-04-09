@@ -49,6 +49,18 @@ func (a AuthController) Routes() []route.Route {
 			Handler:        a.LocalSignUp,
 			ControllerName: a.Name(),
 		},
+		{
+			Pattern:        "/auth/current_user",
+			Method:         http.MethodGet,
+			Handler:        a.CurrentUser,
+			ControllerName: a.Name(),
+		},
+		{
+			Pattern:        "/auth/logout",
+			Method:         http.MethodDelete,
+			Handler:        a.Logout,
+			ControllerName: a.Name(),
+		},
 	}
 }
 
@@ -112,6 +124,16 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if req.Method == http.MethodGet {
+		http.SetCookie(rw, &http.Cookie{
+			Name:  "session",
+			Value: session.Token,
+			Path:  "/",
+		})
+		http.Redirect(rw, req, "/auth/current_user", http.StatusTemporaryRedirect)
+		return
+	}
+
 	rw.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(rw).Encode(session)
 	if err != nil {
@@ -164,6 +186,36 @@ func (a AuthController) LocalSignUp(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	a.LocalLogin(rw, req)
+}
+
+func (a AuthController) CurrentUser(rw http.ResponseWriter, req *http.Request) {
+	user := util.GetContextUser(req)
+
+	rw.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(rw).Encode(user)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+}
+
+func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {
+	user := util.GetContextUser(req)
+	if user == nil {
+		rw.WriteHeader(http.StatusNoContent)
+		rw.Write([]byte(""))
+		return
+	}
+
+	sessionModel := models.NewSessionModel(&a.Database.Adapter)
+	err := sessionModel.DeleteWhere(map[string]any{"userId": user.Id})
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	rw.WriteHeader(http.StatusNoContent)
+	rw.Write([]byte(""))
 }
 
 var _ Controller = AuthController{}
