@@ -12,9 +12,9 @@ type Imdb struct {
 	Data map[string][]any
 }
 
-func NewImdbAdapter() Imdb {
+func NewImdbAdapter(connectionConfig databaseadapters.ConnectionConfig) Imdb {
 	return Imdb{
-		ConnectionConfig: DefaultConfig(),
+		ConnectionConfig: connectionConfig,
 		Data:             map[string][]any{},
 	}
 }

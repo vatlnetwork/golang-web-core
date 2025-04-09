@@ -87,16 +87,6 @@ func FromArgs() (Config, error) {
 	if strings.ToLower(enablePublicFS) == "false" || strings.ToLower(enablePublicFS) == "no" {
 		config.PublicFS = false
 	}
-	switch databaseAdapter {
-	case "imdb":
-		config.Database.Adapter = imdb.NewImdbAdapter()
-		config.Database.Connection = config.Database.Adapter.Connection()
-	case "mongo":
-		config.Database.Adapter = mongo.NewMongoAdapter(config.Environment == Dev)
-		config.Database.Connection = config.Database.Adapter.Connection()
-	case "none":
-		config.Database.Adapter = nil
-	}
 	if databaseHostname != "" {
 		config.Database.Connection.Hostname = databaseHostname
 	}
@@ -108,6 +98,14 @@ func FromArgs() (Config, error) {
 	}
 	if databasePassword != "" {
 		config.Database.Connection.Password = databasePassword
+	}
+	switch databaseAdapter {
+	case "imdb":
+		config.Database.Adapter = imdb.NewImdbAdapter(config.Database.Connection)
+	case "mongo":
+		config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, config.Environment == Dev)
+	case "none":
+		config.Database.Adapter = nil
 	}
 
 	args := os.Args
@@ -140,16 +138,6 @@ func FromArgs() (Config, error) {
 		if arg == "--disable-public-fs" {
 			config.PublicFS = false
 		}
-		if arg == "--db-adapter" {
-			switch args[i+1] {
-			case "imdb":
-				config.Database.Adapter = imdb.NewImdbAdapter()
-				config.Database.Connection = config.Database.Adapter.Connection()
-			case "mongo":
-				config.Database.Adapter = mongo.NewMongoAdapter(config.Environment == Dev)
-				config.Database.Connection = config.Database.Adapter.Connection()
-			}
-		}
 		if arg == "--db-host" {
 			config.Database.Connection.Hostname = args[i+1]
 		}
@@ -161,6 +149,14 @@ func FromArgs() (Config, error) {
 		}
 		if arg == "--db-pass" {
 			config.Database.Connection.Password = args[i+1]
+		}
+		if arg == "--db-adapter" {
+			switch args[i+1] {
+			case "imdb":
+				config.Database.Adapter = imdb.NewImdbAdapter(config.Database.Connection)
+			case "mongo":
+				config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, config.Environment == Dev)
+			}
 		}
 		if arg == "--no-db" {
 			config.Database.Adapter = nil

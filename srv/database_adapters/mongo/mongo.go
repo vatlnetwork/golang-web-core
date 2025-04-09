@@ -18,9 +18,9 @@ type Mongo struct {
 	LogTransactions bool
 }
 
-func NewMongoAdapter(logTransactions bool) Mongo {
+func NewMongoAdapter(connectionConfig databaseadapters.ConnectionConfig, logTransactions bool) Mongo {
 	return Mongo{
-		ConnectionConfig: DefaultConfig(),
+		ConnectionConfig: connectionConfig,
 		LogTransactions:  logTransactions,
 	}
 }
