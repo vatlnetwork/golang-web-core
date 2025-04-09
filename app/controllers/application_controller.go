@@ -72,9 +72,14 @@ func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.Handl
 			}
 		}
 
+		if session == nil {
+			handler(rw, req)
+			return
+		}
+
 		if !session.IsExpired() {
 			userModel := models.NewUserModel(&c.Database.Adapter)
-			user, err := userModel.Find(session.UserId)
+			user, err := userModel.Find(session.UserId.Hex())
 			if err != nil {
 				srverr.HandleSrvError(rw, err)
 				return
