@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
+	"golang-web-core/app/models"
 	"golang-web-core/srv/cfg"
+	"golang-web-core/srv/srverr"
 	"golang-web-core/util"
 	"net/http"
 	"reflect"
@@ -43,6 +46,35 @@ func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.Handl
 		// 	http.Error(rw, "This is a test internal server error", http.StatusInternalServerError)
 		// 	return
 		// }
+
+		token := req.Header.Get("Authorization")
+		if token == "" {
+			handler(rw, req)
+			return
+		}
+
+		sessionModel := models.NewSessionModel(&c.Database.Adapter)
+		session, err := sessionModel.FindByToken(token)
+		if err != nil {
+			if err.(srverr.ServerError).Code != http.StatusNotFound {
+				srverr.HandleSrvError(rw, err)
+				return
+			}
+		}
+
+		if !session.IsExpired() {
+			userModel := models.NewUserModel(&c.Database.Adapter)
+			user, err := userModel.Find(session.UserId)
+			if err != nil {
+				srverr.HandleSrvError(rw, err)
+				return
+			}
+
+			reqWithUser := req.WithContext(context.WithValue(req.Context(), "current_user", user))
+			handler(rw, reqWithUser)
+			return
+		}
+
 		handler(rw, req)
 	}
 }
