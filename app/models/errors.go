@@ -3,10 +3,11 @@ package models
 import (
 	"fmt"
 	databaseadapters "golang-web-core/srv/database_adapters"
+	"golang-web-core/srv/srverr"
 	"reflect"
 )
 
-func ErrUnsupportedAdapter(model any, adapter *databaseadapters.DatabaseAdapter) error {
+func ErrUnsupportedAdapter(model any, adapter *databaseadapters.DatabaseAdapter) srverr.ServerError {
 	name := reflect.TypeOf(model).Name()
 	val := reflect.ValueOf(adapter)
 	elem := val.Elem()
@@ -19,5 +20,5 @@ func ErrUnsupportedAdapter(model any, adapter *databaseadapters.DatabaseAdapter)
 		adapterName = reflect.TypeOf(*adapter).Name()
 	}
 
-	return fmt.Errorf("database adapter %v is unsupported by %v", adapterName, name)
+	return srverr.New(fmt.Sprintf("database adapter %v is unsupported by %v", adapterName, name), 500)
 }
