@@ -96,29 +96,27 @@ func FromArgs() (Config, error) {
 	// database
 	switch databaseAdapter {
 	case "imdb":
-		config.Database.Connection = imdb.DefaultConfig()
-	case "mongo":
-		config.Database.Connection = mongo.DefaultConfig()
-	}
-	if databaseHostname != "" {
-		config.Database.Connection.Hostname = databaseHostname
-	}
-	if databaseName != "" {
-		config.Database.Connection.Database = databaseName
-	}
-	if databaseUsername != "" {
-		config.Database.Connection.Username = databaseUsername
-	}
-	if databasePassword != "" {
-		config.Database.Connection.Password = databasePassword
-	}
-	switch databaseAdapter {
-	case "imdb":
 		config.Database.Adapter = imdb.NewImdbAdapter(config.Database.Connection)
 	case "mongo":
 		config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, config.Environment == Dev)
 	case "none":
 		config.Database.Adapter = nil
+	}
+	if databaseHostname != "" {
+		config.Database.Connection.Hostname = databaseHostname
+		config.Database.Adapter.ApplyConfig(config.Database.Connection)
+	}
+	if databaseName != "" {
+		config.Database.Connection.Database = databaseName
+		config.Database.Adapter.ApplyConfig(config.Database.Connection)
+	}
+	if databaseUsername != "" {
+		config.Database.Connection.Username = databaseUsername
+		config.Database.Adapter.ApplyConfig(config.Database.Connection)
+	}
+	if databasePassword != "" {
+		config.Database.Connection.Password = databasePassword
+		config.Database.Adapter.ApplyConfig(config.Database.Connection)
 	}
 
 	args := os.Args
@@ -153,15 +151,19 @@ func FromArgs() (Config, error) {
 		}
 		if arg == "--db-host" {
 			config.Database.Connection.Hostname = args[i+1]
+			config.Database.Adapter.ApplyConfig(config.Database.Connection)
 		}
 		if arg == "--db-name" {
 			config.Database.Connection.Database = args[i+1]
+			config.Database.Adapter.ApplyConfig(config.Database.Connection)
 		}
 		if arg == "--db-user" {
 			config.Database.Connection.Username = args[i+1]
+			config.Database.Adapter.ApplyConfig(config.Database.Connection)
 		}
 		if arg == "--db-pass" {
 			config.Database.Connection.Password = args[i+1]
+			config.Database.Adapter.ApplyConfig(config.Database.Connection)
 		}
 		if arg == "--db-adapter" {
 			switch args[i+1] {
