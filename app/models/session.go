@@ -88,6 +88,41 @@ func (s SessionModel) Create(object any) (any, error) {
 	return nil, ErrUnsupportedAdapter(s, s.adapter)
 }
 
+func (s SessionModel) FindOrCreate(userId bson.ObjectID) (domain.Session, error) {
+	results, err := s.Where(map[string]any{"userId": userId})
+	if err != nil {
+		return domain.Session{}, err
+	}
+
+	sessions, ok := results.([]domain.Session)
+	if !ok {
+		return domain.Session{}, srverr.New("results are not a slice of Session")
+	}
+
+	for _, session := range sessions {
+		if session.IsExpired() {
+			err = s.Delete(session.Id.Hex())
+			if err != nil {
+				return domain.Session{}, err
+			}
+		} else {
+			return session, nil
+		}
+	}
+
+	session, err := domain.NewSession(userId)
+	if err != nil {
+		return domain.Session{}, srverr.Wrap(err)
+	}
+
+	newSession, err := s.Create(session)
+	if err != nil {
+		return domain.Session{}, err
+	}
+
+	return newSession.(domain.Session), nil
+}
+
 // Delete implements Model.
 func (s SessionModel) Delete(key any) error {
 	keyStr, isString := key.(string)

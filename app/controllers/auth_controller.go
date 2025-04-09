@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
+	"golang-web-core/app/domain"
+	"golang-web-core/app/models"
 	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/route"
 	"golang-web-core/srv/srverr"
@@ -59,7 +62,95 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// usersModel := models.NewUserModel(&a.Database.Adapter)
+	usersModel := models.NewUserModel(&a.Database.Adapter)
+	user, err := usersModel.FindByEmail(email)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	passwordCorrect, err := user.CheckPassword(password)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	if !passwordCorrect {
+		srverr.Handle401(rw, fmt.Errorf("password is incorrect"))
+		return
+	}
+
+	sessionModel := models.NewSessionModel(&a.Database.Adapter)
+	session, err := sessionModel.FindOrCreate(user.Id)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	if params["remember_me"] == true {
+		session.Expires = false
+	}
+
+	session.ResetExpiration()
+
+	err = sessionModel.Update(session.Id.Hex(), session)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(session)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+}
+
+func (a AuthController) LocalSignUp(rw http.ResponseWriter, req *http.Request) {
+	params, err := util.GetParams(req)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	email := ""
+	password := ""
+	firstName := ""
+	lastName := ""
+
+	if params["email"] != nil {
+		email = params["email"].(string)
+	}
+	if params["password"] != nil {
+		password = params["password"].(string)
+	}
+	if params["first_name"] != nil {
+		firstName = params["first_name"].(string)
+	}
+	if params["last_name"] != nil {
+		lastName = params["last_name"].(string)
+	}
+
+	if firstName == "" || lastName == "" {
+		srverr.Handle400(rw, fmt.Errorf("first name and last name are required"))
+		return
+	}
+
+	user, err := domain.NewUser(email, firstName, lastName, password)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	usersModel := models.NewUserModel(&a.Database.Adapter)
+	_, err = usersModel.Create(user)
+	if err != nil {
+		srverr.HandleSrvError(rw, err)
+		return
+	}
+
+	a.LocalLogin(rw, req)
 }
 
 var _ Controller = AuthController{}
