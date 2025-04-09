@@ -34,3 +34,11 @@ func HandleError(code int, rw http.ResponseWriter, err error) {
 	http.Error(rw, err.Error(), code)
 	util.LogColor("red", "%v: %v", code, err.Error())
 }
+
+func HandleSrvError(rw http.ResponseWriter, err error) {
+	if srvErr, ok := err.(ServerError); ok {
+		HandleError(srvErr.Code, rw, err)
+	} else {
+		Handle500(rw, err)
+	}
+}
