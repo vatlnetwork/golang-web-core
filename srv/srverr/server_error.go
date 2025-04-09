@@ -1,5 +1,9 @@
 package srverr
 
+type SrvErr interface {
+	IsSrvErr() bool
+}
+
 type ServerError struct {
 	Message string
 	Code    int
@@ -31,4 +35,8 @@ func Wrap(err error, code ...int) ServerError {
 
 func (e ServerError) Error() string {
 	return e.Message
+}
+
+func (e ServerError) IsSrvErr() bool {
+	return true
 }
