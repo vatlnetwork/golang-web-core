@@ -49,8 +49,18 @@ func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.Handl
 
 		token := req.Header.Get("Authorization")
 		if token == "" {
-			handler(rw, req)
-			return
+			sessionCookie, err := req.Cookie("session")
+			if err != nil {
+				srverr.HandleSrvError(rw, err)
+				return
+			}
+
+			token = sessionCookie.Value
+
+			if token == "" {
+				handler(rw, req)
+				return
+			}
 		}
 
 		sessionModel := models.NewSessionModel(&c.Database.Adapter)
