@@ -66,6 +66,17 @@ func (u UserModel) Create(object any) (any, error) {
 		}
 	}
 
+	userByEmail, err := u.FindByEmail(user.Email)
+	if err != nil {
+		if err.(srverr.ServerError).Code != http.StatusNotFound {
+			return nil, srverr.Wrap(err)
+		}
+	}
+
+	if userByEmail.Email == user.Email {
+		return nil, srverr.New("User with this email already exists", http.StatusBadRequest)
+	}
+
 	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
@@ -228,7 +239,7 @@ func (u UserModel) Update(key any, object any) error {
 		return srverr.New("key must be a string")
 	}
 
-	_, isUser := object.(domain.User)
+	user, isUser := object.(domain.User)
 	if !isUser {
 		// Check for pointer type as well
 		_, isUserPtr := object.(*domain.User)
@@ -236,6 +247,24 @@ func (u UserModel) Update(key any, object any) error {
 			return srverr.New("the given object is not a User or *User")
 		}
 		isUser = true // Mark as valid if it's a pointer
+	}
+
+	dbUser, err := u.Find(keyStr)
+	if err != nil {
+		return err
+	}
+
+	if dbUser.(domain.User).Email != user.Email {
+		userByEmail, err := u.FindByEmail(user.Email)
+		if err != nil {
+			if err.(srverr.ServerError).Code != http.StatusNotFound {
+				return err
+			}
+		}
+
+		if userByEmail.Email == user.Email {
+			return srverr.New("User with this email already exists", http.StatusBadRequest)
+		}
 	}
 
 	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
