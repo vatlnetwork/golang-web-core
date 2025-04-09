@@ -105,6 +105,22 @@ func (u UserModel) Delete(key any) error {
 		return srverr.New("key must be a string")
 	}
 
+	dbUser, err := u.Find(keyStr)
+	if err != nil {
+		return err
+	}
+
+	user, isUser := dbUser.(domain.User)
+	if !isUser {
+		return srverr.New("the given object is not a User or *User")
+	}
+
+	sessionModel := NewSessionModel(u.adapter)
+	err = sessionModel.DeleteWhere(map[string]any{"userId": user.Id})
+	if err != nil {
+		return err
+	}
+
 	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
@@ -135,6 +151,24 @@ func (u UserModel) Delete(key any) error {
 
 // DeleteWhere implements Model.
 func (u UserModel) DeleteWhere(query map[string]any) error {
+	results, err := u.Where(query)
+	if err != nil {
+		return err
+	}
+
+	users, areUsers := results.([]domain.User)
+	if !areUsers {
+		return srverr.New("results are not a slice of User")
+	}
+
+	for _, user := range users {
+		sessionModel := NewSessionModel(u.adapter)
+		err = sessionModel.DeleteWhere(map[string]any{"userId": user.Id})
+		if err != nil {
+			return err
+		}
+	}
+
 	mongoAdapter, ok := (*u.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()

@@ -12,10 +12,10 @@ import (
 )
 
 type SessionModel struct {
-	adapter databaseadapters.DatabaseAdapter
+	adapter *databaseadapters.DatabaseAdapter
 }
 
-func NewSessionModel(adapter databaseadapters.DatabaseAdapter) SessionModel {
+func NewSessionModel(adapter *databaseadapters.DatabaseAdapter) SessionModel {
 	return SessionModel{
 		adapter: adapter,
 	}
@@ -23,12 +23,12 @@ func NewSessionModel(adapter databaseadapters.DatabaseAdapter) SessionModel {
 
 // Adapter implements Model.
 func (s SessionModel) Adapter() *databaseadapters.DatabaseAdapter {
-	return &s.adapter
+	return s.adapter
 }
 
 // All implements Model.
 func (s SessionModel) All() (any, error) {
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -50,7 +50,7 @@ func (s SessionModel) All() (any, error) {
 		return sessions, nil
 	}
 
-	return nil, ErrUnsupportedAdapter(s, &s.adapter)
+	return nil, ErrUnsupportedAdapter(s, s.adapter)
 }
 
 // Create implements Model.
@@ -68,7 +68,7 @@ func (s SessionModel) Create(object any) (any, error) {
 		}
 	}
 
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -85,7 +85,7 @@ func (s SessionModel) Create(object any) (any, error) {
 		return session, nil // Return value type
 	}
 
-	return nil, ErrUnsupportedAdapter(s, &s.adapter)
+	return nil, ErrUnsupportedAdapter(s, s.adapter)
 }
 
 // Delete implements Model.
@@ -95,7 +95,7 @@ func (s SessionModel) Delete(key any) error {
 		return srverr.New("key must be a string (ObjectID hex)")
 	}
 
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -120,12 +120,12 @@ func (s SessionModel) Delete(key any) error {
 		return nil
 	}
 
-	return ErrUnsupportedAdapter(s, &s.adapter)
+	return ErrUnsupportedAdapter(s, s.adapter)
 }
 
 // DeleteWhere implements Model.
 func (s SessionModel) DeleteWhere(query map[string]any) error {
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -146,7 +146,7 @@ func (s SessionModel) DeleteWhere(query map[string]any) error {
 		return nil
 	}
 
-	return ErrUnsupportedAdapter(s, &s.adapter)
+	return ErrUnsupportedAdapter(s, s.adapter)
 }
 
 // Find implements Model.
@@ -169,7 +169,7 @@ func (s SessionModel) Find(key any) (any, error) {
 
 	// If keyStr was set, attempt ObjectID conversion
 	if keyStr != "" {
-		mongoAdapter, ok := s.adapter.(mongo.Mongo)
+		mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 		if ok {
 			client, ctx, cancel, err := mongoAdapter.Connect()
 			if err != nil {
@@ -197,7 +197,7 @@ func (s SessionModel) Find(key any) (any, error) {
 			return nil, srverr.New(fmt.Sprintf("unable to find a Session with %s = %v or token = %v", s.PrimaryKey(), keyStr, keyStr), http.StatusNotFound)
 
 		}
-		return nil, ErrUnsupportedAdapter(s, &s.adapter)
+		return nil, ErrUnsupportedAdapter(s, s.adapter)
 	}
 
 	// Should not be reached if logic is correct, but return general error
@@ -206,9 +206,9 @@ func (s SessionModel) Find(key any) (any, error) {
 
 // FindByToken specifically finds a session by its token string.
 func (s SessionModel) FindByToken(token string) (*domain.Session, error) {
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if !ok {
-		return nil, ErrUnsupportedAdapter(s, &s.adapter)
+		return nil, ErrUnsupportedAdapter(s, s.adapter)
 	}
 
 	client, ctx, cancel, err := mongoAdapter.Connect()
@@ -267,7 +267,7 @@ func (s SessionModel) Update(key any, object any) error {
 		return srverr.New("the given object is not a Session or *Session")
 	}
 
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -296,7 +296,7 @@ func (s SessionModel) Update(key any, object any) error {
 		return nil
 	}
 
-	return ErrUnsupportedAdapter(s, &s.adapter)
+	return ErrUnsupportedAdapter(s, s.adapter)
 }
 
 // UpdateWhere implements Model.
@@ -311,7 +311,7 @@ func (s SessionModel) UpdateWhere(query map[string]any, object any) error {
 		return srverr.New("the given object is not a Session or *Session")
 	}
 
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -336,12 +336,12 @@ func (s SessionModel) UpdateWhere(query map[string]any, object any) error {
 		return nil
 	}
 
-	return ErrUnsupportedAdapter(s, &s.adapter)
+	return ErrUnsupportedAdapter(s, s.adapter)
 }
 
 // Where implements Model.
 func (s SessionModel) Where(query map[string]any) (any, error) {
-	mongoAdapter, ok := s.adapter.(mongo.Mongo)
+	mongoAdapter, ok := (*s.adapter).(mongo.Mongo)
 	if ok {
 		client, ctx, cancel, err := mongoAdapter.Connect()
 		if err != nil {
@@ -367,7 +367,7 @@ func (s SessionModel) Where(query map[string]any) (any, error) {
 
 		return sessions, nil
 	}
-	return nil, ErrUnsupportedAdapter(s, &s.adapter)
+	return nil, ErrUnsupportedAdapter(s, s.adapter)
 }
 
 // Helper function specific to SessionModel queries involving ObjectIDs
