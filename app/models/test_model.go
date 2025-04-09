@@ -44,7 +44,7 @@ func (m TestModel) Create(object any) (any, error) {
 	}
 
 	// if the adapter is a mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect to the mongo database
 		client, context, cancel, err := mongoAdapter.Connect()
@@ -64,7 +64,7 @@ func (m TestModel) Create(object any) (any, error) {
 	}
 
 	// if the adapter is an imdb adapter
-	imdbAdapter, ok := (*m.adapter).(imdb.Imdb)
+	imdbAdapter, ok := (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// insert the object
 		imdbAdapter.Insert(m.Name(), object)
@@ -87,7 +87,7 @@ func (m TestModel) Find(key any) (any, error) {
 	}
 
 	// case for mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect to mongo database
 		client, context, cancel, err := mongoAdapter.Connect()
@@ -125,7 +125,7 @@ func (m TestModel) Find(key any) (any, error) {
 	}
 
 	// case for imdb adapter
-	imdbAdapter, ok := (*m.adapter).(imdb.Imdb)
+	imdbAdapter, ok := (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// get the object from the memory collection
 		iface, err := imdbAdapter.Find(m.Name(), m.PrimaryKey(), key)
@@ -149,7 +149,7 @@ func (m TestModel) Find(key any) (any, error) {
 
 func (m TestModel) Where(query map[string]any) (any, error) {
 	// case for mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect to mongo db
 		client, context, cancel, err := mongoAdapter.Connect()
@@ -182,7 +182,7 @@ func (m TestModel) Where(query map[string]any) (any, error) {
 	}
 
 	// case for imdb adapter
-	imdbAdapter, ok := (*m.adapter).(imdb.Imdb)
+	imdbAdapter, ok := (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// get the records from the memory collection
 		records := imdbAdapter.Query(m.Name(), query)
@@ -210,7 +210,7 @@ func (m TestModel) Where(query map[string]any) (any, error) {
 
 func (m TestModel) All() (any, error) {
 	// case for mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect to the mongo db
 		client, ctx, cancel, err := mongoAdapter.Connect()
@@ -237,7 +237,7 @@ func (m TestModel) All() (any, error) {
 	}
 
 	// case for imdb adapter
-	imdbAdapter, ok := (*m.adapter).(imdb.Imdb)
+	imdbAdapter, ok := (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// get all of the objects from the memory collection
 		objects := imdbAdapter.GetAll(m.Name())
@@ -274,7 +274,7 @@ func (m TestModel) Update(key, object any) error {
 	}
 
 	// case for mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect to mongo db
 		client, ctx, cancel, err := mongoAdapter.Connect()
@@ -305,7 +305,7 @@ func (m TestModel) Update(key, object any) error {
 	}
 
 	// case for imdb adapter
-	imdbAdapter, ok := (*m.adapter).(imdb.Imdb)
+	imdbAdapter, ok := (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// update the memory collection
 		err := imdbAdapter.Update(m.Name(), m.PrimaryKey(), key, object)
@@ -329,7 +329,7 @@ func (m TestModel) UpdateWhere(query map[string]any, object any) error {
 	}
 
 	// case for mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect to the mongo db
 		client, ctx, cancel, err := mongoAdapter.Connect()
@@ -361,7 +361,7 @@ func (m TestModel) UpdateWhere(query map[string]any, object any) error {
 	}
 
 	// case for imdb adapter
-	_, ok = (*m.adapter).(imdb.Imdb)
+	_, ok = (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// get records matching query
 		records, err := m.Where(query)
@@ -394,7 +394,7 @@ func (m TestModel) Delete(key any) error {
 	}
 
 	// case for mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect the mongo db
 		client, ctx, cancel, err := mongoAdapter.Connect()
@@ -420,7 +420,7 @@ func (m TestModel) Delete(key any) error {
 	}
 
 	// case for imdb adapter
-	imdbAdapter, ok := (*m.adapter).(imdb.Imdb)
+	imdbAdapter, ok := (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// delete the record matching the key
 		err := imdbAdapter.Delete(m.Name(), m.PrimaryKey(), key)
@@ -438,7 +438,7 @@ func (m TestModel) Delete(key any) error {
 
 func (m TestModel) DeleteWhere(query map[string]any) error {
 	// case for mongo adapter
-	mongoAdapter, ok := (*m.adapter).(mongo.Mongo)
+	mongoAdapter, ok := (*m.adapter).(*mongo.Mongo)
 	if ok {
 		// connect to the mongo db
 		client, ctx, cancel, err := mongoAdapter.Connect()
@@ -464,7 +464,7 @@ func (m TestModel) DeleteWhere(query map[string]any) error {
 	}
 
 	// case for imdb adapter
-	_, ok = (*m.adapter).(imdb.Imdb)
+	_, ok = (*m.adapter).(*imdb.Imdb)
 	if ok {
 		// find all records matching the query
 		records, err := m.Where(query)

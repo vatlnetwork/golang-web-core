@@ -12,8 +12,8 @@ type Imdb struct {
 	Data map[string][]any
 }
 
-func NewImdbAdapter(connectionConfig databaseadapters.ConnectionConfig) Imdb {
-	return Imdb{
+func NewImdbAdapter(connectionConfig databaseadapters.ConnectionConfig) *Imdb {
+	return &Imdb{
 		ConnectionConfig: connectionConfig,
 		Data:             map[string][]any{},
 	}
@@ -29,6 +29,10 @@ func (db Imdb) Connection() databaseadapters.ConnectionConfig {
 
 func (db Imdb) TestConnection() error {
 	return nil
+}
+
+func (db *Imdb) ApplyConfig(config databaseadapters.ConnectionConfig) {
+	db.ConnectionConfig = config
 }
 
 func (db *Imdb) Insert(modelName string, object any) {
