@@ -107,14 +107,9 @@ func (c TestController) TestMemberMethod(rw http.ResponseWriter, req *http.Reque
 // this section of the controller interacts with the models section of the web core
 
 func (c TestController) TestCreateMethod(rw http.ResponseWriter, req *http.Request) {
-	var inputObject domain.TestObject
-	err := util.DecodeRequestBody(req, &inputObject)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
-	object := domain.NewTestObject(inputObject.Number, inputObject.Boolean)
+	object := domain.NewTestObject(int(params["number"].(float64)), params["boolean"].(bool))
 
 	testModel := models.NewTestModel(&c.Config.Database.Adapter)
 
@@ -163,16 +158,17 @@ func (c TestController) TestReadMethod(rw http.ResponseWriter, req *http.Request
 }
 
 func (c TestController) TestUpdateMethod(rw http.ResponseWriter, req *http.Request) {
-	var object domain.TestObject
-	err := util.DecodeRequestBody(req, &object)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
 	testModel := models.NewTestModel(&c.Database.Adapter)
 
-	err = testModel.Update(object.Id, object)
+	testObject := domain.TestObject{
+		Id:      params["id"].(string),
+		Number:  int(params["number"].(float64)),
+		Boolean: params["boolean"].(bool),
+	}
+
+	err := testModel.Update(testObject.Id, testObject)
 	if err != nil {
 		srverr.Handle500(rw, err)
 		return

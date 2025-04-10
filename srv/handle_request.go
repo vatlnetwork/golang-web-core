@@ -1,6 +1,7 @@
 package srv
 
 import (
+	"context"
 	"fmt"
 	"golang-web-core/app/controllers"
 	"golang-web-core/srv/cfg"
@@ -24,18 +25,23 @@ func HandleRequest(appController controllers.ApplicationController, route route.
 
 		logRequest(req)
 
-		if appController.Config.Environment == cfg.Dev {
-			params, err := util.GetParams(req)
-			if err == nil {
+		params, err := util.GetParams(req)
+		if err == nil {
+			if appController.Config.Environment == cfg.Dev {
 				log.Printf("%v Params: %v\n", req.Header.Get("X-Request-ID"), params)
 			}
 		}
+		if params == nil {
+			params = map[string]any{}
+		}
+
+		reqWithParams := req.WithContext(context.WithValue(req.Context(), "params", params))
 
 		controller := appController.Controllers[route.ControllerName]
 
-		appController.BeforeAction(controller.BeforeAction(route.Handler))(rw, req)
+		appController.BeforeAction(controller.BeforeAction(route.Handler))(rw, reqWithParams)
 
-		logFinished(rw, req)
+		logFinished(rw, reqWithParams)
 	}
 }
 
