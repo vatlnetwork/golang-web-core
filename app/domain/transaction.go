@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -13,9 +14,10 @@ type Transaction struct {
 	Description string        `json:"description" bson:"description"`
 	GroupId     bson.ObjectID `json:"groupId" bson:"groupId,omitempty"`
 	Year        int           `json:"year" bson:"year"`
+	UserId      bson.ObjectID `json:"userId" bson:"userId"`
 }
 
-func NewTransaction(amount float64, description string, groupId string) (Transaction, error) {
+func NewTransaction(amount float64, description, groupId string, userId bson.ObjectID) (Transaction, error) {
 	var transactionGroupId bson.ObjectID
 	if groupId != "" {
 		var err error
@@ -25,12 +27,17 @@ func NewTransaction(amount float64, description string, groupId string) (Transac
 		}
 	}
 
+	if userId.IsZero() {
+		return Transaction{}, fmt.Errorf("user id is required")
+	}
+
 	transaction := Transaction{
 		Amount:      amount,
 		Timestamp:   time.Now().UnixMilli(),
 		Description: description,
 		GroupId:     transactionGroupId,
 		Year:        time.Now().Year(),
+		UserId:      userId,
 	}
 
 	return transaction, nil

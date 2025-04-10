@@ -29,6 +29,12 @@ func NewTransactionsController(cfg cfg.Config) TransactionsController {
 // BeforeAction implements Controller.
 func (t TransactionsController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		_, err := util.ContextUserOrError(r)
+		if err != nil {
+			srverr.Handle401(w, err)
+			return
+		}
+
 		handler(w, r)
 	}
 }
@@ -104,7 +110,9 @@ func (t TransactionsController) CreateTransaction(rw http.ResponseWriter, req *h
 		}
 	}
 
-	newTransaction, err := domain.NewTransaction(amount, description, groupId)
+	user := util.GetContextUser(req)
+
+	newTransaction, err := domain.NewTransaction(amount, description, groupId, user.Id)
 	if err != nil {
 		srverr.Handle400(rw, err)
 		return

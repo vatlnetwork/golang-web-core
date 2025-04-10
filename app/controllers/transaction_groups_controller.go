@@ -25,6 +25,12 @@ func NewTransactionGroupsController(cfg cfg.Config) TransactionGroupsController 
 
 func (t TransactionGroupsController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
+		_, err := util.ContextUserOrError(req)
+		if err != nil {
+			srverr.Handle401(rw, err)
+			return
+		}
+
 		handler(rw, req)
 	}
 }
@@ -79,7 +85,9 @@ func (t TransactionGroupsController) CreateTransactionGroup(rw http.ResponseWrit
 		description = "Unnamed Group"
 	}
 
-	newTransactionGroup := domain.NewTransactionGroup(description)
+	user := util.GetContextUser(req)
+
+	newTransactionGroup := domain.NewTransactionGroup(description, user.Id)
 
 	transactionGroupsModel := models.NewTransactionGroupModel(&t.Database.Adapter)
 	transactionGroup, err := transactionGroupsModel.Create(newTransactionGroup)
