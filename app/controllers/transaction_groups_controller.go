@@ -102,7 +102,9 @@ func (t TransactionGroupsController) CreateTransactionGroup(rw http.ResponseWrit
 
 func (t TransactionGroupsController) Index(rw http.ResponseWriter, req *http.Request) {
 	transactionGroupsModel := models.NewTransactionGroupModel(&t.Database.Adapter)
-	results, err := transactionGroupsModel.All()
+
+	user := util.GetContextUser(req)
+	results, err := transactionGroupsModel.Where(map[string]any{"userId": user.Id})
 	if err != nil {
 		srverr.Handle500(rw, err)
 		return
@@ -140,6 +142,12 @@ func (t TransactionGroupsController) UpdateTransactionGroup(rw http.ResponseWrit
 		return
 	}
 
+	user := util.GetContextUser(req)
+	if transactionGroup.UserId.Hex() != user.Id.Hex() {
+		srverr.Handle403(rw, fmt.Errorf("transaction group not found"))
+		return
+	}
+
 	if params["description"] != nil {
 		transactionGroup.Description = params["description"].(string)
 	}
@@ -158,7 +166,27 @@ func (t TransactionGroupsController) DeleteTransactionGroup(rw http.ResponseWrit
 	transactionGroupId := req.PathValue("id")
 
 	transactionGroupsModel := models.NewTransactionGroupModel(&t.Database.Adapter)
-	err := transactionGroupsModel.Delete(transactionGroupId)
+
+	user := util.GetContextUser(req)
+
+	result, err := transactionGroupsModel.Find(transactionGroupId)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	transactionGroup, ok := result.(domain.TransactionGroup)
+	if !ok {
+		srverr.Handle500(rw, fmt.Errorf("result is not a transaction group"))
+		return
+	}
+
+	if transactionGroup.UserId.Hex() != user.Id.Hex() {
+		srverr.Handle403(rw, fmt.Errorf("transaction group not found"))
+		return
+	}
+
+	err = transactionGroupsModel.Delete(transactionGroupId)
 	if err != nil {
 		srverr.Handle500(rw, err)
 		return

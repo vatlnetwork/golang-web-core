@@ -10,7 +10,7 @@ import (
 type Transaction struct {
 	Id          bson.ObjectID `json:"id" bson:"_id,omitempty"`
 	Amount      float64       `json:"amount" bson:"amount"`
-	Timestamp   int64         `json:"timestamp" bson:"timestamp"`
+	Timestamp   time.Time     `json:"timestamp" bson:"timestamp"`
 	Description string        `json:"description" bson:"description"`
 	GroupId     bson.ObjectID `json:"groupId" bson:"groupId,omitempty"`
 	Year        int           `json:"year" bson:"year"`
@@ -33,7 +33,7 @@ func NewTransaction(amount float64, description, groupId string, userId bson.Obj
 
 	transaction := Transaction{
 		Amount:      amount,
-		Timestamp:   time.Now().UnixMilli(),
+		Timestamp:   time.Now(),
 		Description: description,
 		GroupId:     transactionGroupId,
 		Year:        time.Now().Year(),

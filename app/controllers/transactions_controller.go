@@ -11,6 +11,7 @@ import (
 	"golang-web-core/util"
 	"net/http"
 	"reflect"
+	"sort"
 	"strconv"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -139,7 +140,13 @@ func (t TransactionsController) GetTransactionsByYear(rw http.ResponseWriter, re
 
 	transactionsModel := models.NewTransactionModel(&t.Database.Adapter)
 
-	results, err := transactionsModel.Where(map[string]any{"year": year})
+	user := util.GetContextUser(req)
+	query := map[string]any{
+		"userId": user.Id,
+		"year":   year,
+	}
+
+	results, err := transactionsModel.Where(query)
 	if err != nil {
 		srverr.Handle500(rw, err)
 		return
@@ -150,6 +157,8 @@ func (t TransactionsController) GetTransactionsByYear(rw http.ResponseWriter, re
 		srverr.Handle500(rw, fmt.Errorf("results are not a slice of transactions"))
 		return
 	}
+
+	transactions = sortTransactionsByTimeDesc(transactions)
 
 	rw.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(rw).Encode(transactions)
@@ -174,6 +183,12 @@ func (t TransactionsController) UpdateTransaction(rw http.ResponseWriter, req *h
 	transaction, ok := result.(domain.Transaction)
 	if !ok {
 		srverr.Handle500(rw, fmt.Errorf("result is not a transaction"))
+		return
+	}
+
+	user := util.GetContextUser(req)
+	if transaction.UserId.Hex() != user.Id.Hex() {
+		srverr.Handle403(rw, fmt.Errorf("transaction not found"))
 		return
 	}
 
@@ -202,14 +217,42 @@ func (t TransactionsController) UpdateTransaction(rw http.ResponseWriter, req *h
 func (t TransactionsController) DeleteTransaction(rw http.ResponseWriter, req *http.Request) {
 	transactionId := req.PathValue("id")
 
+	user := util.GetContextUser(req)
+
 	transactionsModel := models.NewTransactionModel(&t.Database.Adapter)
-	err := transactionsModel.Delete(transactionId)
+
+	result, err := transactionsModel.Find(transactionId)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	transaction, ok := result.(domain.Transaction)
+	if !ok {
+		srverr.Handle500(rw, fmt.Errorf("result is not a transaction"))
+		return
+	}
+
+	if transaction.UserId.Hex() != user.Id.Hex() {
+		srverr.Handle403(rw, fmt.Errorf("transaction not found"))
+		return
+	}
+
+	err = transactionsModel.Delete(transactionId)
 	if err != nil {
 		srverr.Handle500(rw, err)
 		return
 	}
 
 	rw.WriteHeader(http.StatusNoContent)
+}
+
+func sortTransactionsByTimeDesc(transactions []domain.Transaction) []domain.Transaction {
+	sort.Slice(transactions, func(i, j int) bool {
+		return transactions[i].Timestamp.After(transactions[j].Timestamp)
+	})
+
+	return transactions
 }
 
 var _ Controller = TransactionsController{}
