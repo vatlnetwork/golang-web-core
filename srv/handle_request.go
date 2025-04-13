@@ -1,21 +1,31 @@
 package srv
 
 import (
-	"fmt"
+	"context"
 	"golang-web-core/app/controllers"
 	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/route"
 	"golang-web-core/util"
 	"log"
+	"math/rand"
 	"net/http"
 	"time"
 )
 
-func SetRequestID(req *http.Request) {
-	requestId := time.Now().UnixMilli()
-	requestIdStr := fmt.Sprintf("%v", requestId)
+func generateRequestID(length int) string {
+	rand.New(rand.NewSource(time.Now().UnixNano())) // Seed for randomness
+	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	result := make([]byte, length)
+	for i := 0; i < length; i++ {
+		result[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(result)
+}
 
-	req.Header.Set("X-Request-ID", requestIdStr)
+func SetRequestID(req *http.Request) {
+	requestId := generateRequestID(16)
+
+	req.Header.Set("X-Request-ID", requestId)
 }
 
 func HandleRequest(appController controllers.ApplicationController, route route.Route) http.HandlerFunc {
@@ -24,18 +34,23 @@ func HandleRequest(appController controllers.ApplicationController, route route.
 
 		logRequest(req)
 
-		if appController.Config.Environment == cfg.Dev {
-			params, err := util.GetParams(req)
-			if err == nil {
+		params, err := util.GetParams(req)
+		if err == nil {
+			if appController.Config.Environment == cfg.Dev {
 				log.Printf("%v Params: %v\n", req.Header.Get("X-Request-ID"), params)
 			}
 		}
+		if params == nil {
+			params = map[string]any{}
+		}
+
+		reqWithParams := req.WithContext(context.WithValue(req.Context(), "params", params))
 
 		controller := appController.Controllers[route.ControllerName]
 
-		appController.BeforeAction(controller.BeforeAction(route.Handler))(rw, req)
+		appController.BeforeAction(controller.BeforeAction(route.Handler))(rw, reqWithParams)
 
-		logFinished(rw, req)
+		logFinished(rw, reqWithParams)
 	}
 }
 
