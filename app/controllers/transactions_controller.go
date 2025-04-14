@@ -75,11 +75,7 @@ func (t TransactionsController) Routes() []route.Route {
 }
 
 func (t TransactionsController) CreateTransaction(rw http.ResponseWriter, req *http.Request) {
-	params, err := util.GetParams(req)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
 	amount := 0.0
 	if params["amount"] != nil {
@@ -165,11 +161,7 @@ func (t TransactionsController) GetTransactionsByYear(rw http.ResponseWriter, re
 }
 
 func (t TransactionsController) UpdateTransaction(rw http.ResponseWriter, req *http.Request) {
-	params, err := util.GetParams(req)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
 	transactionId := req.PathValue("id")
 

@@ -83,11 +83,7 @@ func (a AuthController) Routes() []route.Route {
 }
 
 func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
-	params, err := util.GetParams(req)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
 	email := ""
 	password := ""
@@ -163,11 +159,7 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 func (a AuthController) LocalSignUp(rw http.ResponseWriter, req *http.Request) {
 	fmt.Println(a.Database.Connection.Database)
 
-	params, err := util.GetParams(req)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
 	email := ""
 	password := ""

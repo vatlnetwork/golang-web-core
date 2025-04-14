@@ -70,11 +70,7 @@ func (t TransactionGroupsController) Routes() []route.Route {
 }
 
 func (t TransactionGroupsController) CreateTransactionGroup(rw http.ResponseWriter, req *http.Request) {
-	params, err := util.GetParams(req)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
 	description := ""
 	if params["description"] != nil {
@@ -121,11 +117,7 @@ func (t TransactionGroupsController) Index(rw http.ResponseWriter, req *http.Req
 }
 
 func (t TransactionGroupsController) UpdateTransactionGroup(rw http.ResponseWriter, req *http.Request) {
-	params, err := util.GetParams(req)
-	if err != nil {
-		srverr.Handle400(rw, err)
-		return
-	}
+	params := util.GetParamsFromContext(req)
 
 	transactionGroupId := req.PathValue("id")
 

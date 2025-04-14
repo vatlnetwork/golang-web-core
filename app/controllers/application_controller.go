@@ -9,6 +9,7 @@ import (
 	"golang-web-core/util"
 	"net/http"
 	"reflect"
+	"strings"
 )
 
 // you shouldn't be touching this file except for the BeforeAction and setupControllers
@@ -51,11 +52,15 @@ func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.Handl
 		if token == "" {
 			sessionCookie, err := req.Cookie("session")
 			if err != nil {
-				srverr.HandleSrvError(rw, err)
-				return
+				if !strings.Contains(err.Error(), "named cookie not present") {
+					srverr.HandleSrvError(rw, err)
+					return
+				}
 			}
 
-			token = sessionCookie.Value
+			if sessionCookie != nil {
+				token = sessionCookie.Value
+			}
 
 			if token == "" {
 				handler(rw, req)
