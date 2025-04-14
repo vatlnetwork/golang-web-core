@@ -98,7 +98,7 @@ func (m Mongo) InsertMany(client *mongo.Client, ctx context.Context, col string,
 func (m Mongo) Query(client *mongo.Client, ctx context.Context, col string, query, field any) (*mongo.Cursor, error) {
 	collection := client.Database(m.Database).Collection(col)
 	result, err := collection.Find(ctx, query, options.Find().SetProjection(field))
-	if m.LogTransactions {
+	if m.LogTransactions && result != nil {
 		util.LogColor("lightblue", "Queried %v documents from collection %v", result.RemainingBatchLength(), col)
 	}
 	return result, err
