@@ -7,6 +7,10 @@ import (
 )
 
 func DecodeRequestBody(req *http.Request, decodeObject any) error {
+	if req.Body == nil {
+		return nil
+	}
+
 	bytes, err := io.ReadAll(req.Body)
 	if err != nil {
 		return err
@@ -21,6 +25,10 @@ func DecodeRequestBody(req *http.Request, decodeObject any) error {
 }
 
 func DecodeRequestBodyToMap(req *http.Request) (map[string]any, error) {
+	if req.Body == nil {
+		return make(map[string]any), nil
+	}
+
 	bytes, err := io.ReadAll(req.Body)
 	if err != nil {
 		return nil, err
