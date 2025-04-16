@@ -1,6 +1,7 @@
 package util
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
@@ -32,4 +33,20 @@ func GetParams(req *http.Request, maxSize ...int64) (map[string]any, error) {
 
 func GetParamsFromContext(req *http.Request) map[string]any {
 	return req.Context().Value("params").(map[string]any)
+}
+
+func DecodeContextParams(req *http.Request, object any) error {
+	params := GetParamsFromContext(req)
+
+	paramsJson, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(paramsJson, object)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
