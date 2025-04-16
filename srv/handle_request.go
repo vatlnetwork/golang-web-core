@@ -28,6 +28,10 @@ func SetRequestID(req *http.Request) {
 	req.Header.Set("X-Request-ID", requestId)
 }
 
+type ParamsKeyType string
+
+const ParamsKey ParamsKeyType = "params"
+
 func HandleRequest(appController controllers.ApplicationController, route route.Route) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
 		SetRequestID(req)
@@ -44,7 +48,7 @@ func HandleRequest(appController controllers.ApplicationController, route route.
 			params = map[string]any{}
 		}
 
-		reqWithParams := req.WithContext(context.WithValue(req.Context(), "params", params))
+		reqWithParams := req.WithContext(context.WithValue(req.Context(), ParamsKey, params))
 
 		controller := appController.Controllers[route.ControllerName]
 
