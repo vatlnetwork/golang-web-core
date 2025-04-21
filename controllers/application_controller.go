@@ -48,7 +48,7 @@ func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.Handl
 }
 
 func (c ApplicationController) Favicon(rw http.ResponseWriter, req *http.Request) {
-	http.ServeFile(rw, req, "app/favicon.ico")
+	http.ServeFile(rw, req, "favicon.ico")
 }
 
 func (c ApplicationController) setupControllers() error {
