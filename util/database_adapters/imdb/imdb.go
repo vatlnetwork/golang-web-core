@@ -2,37 +2,17 @@ package imdb
 
 import (
 	"fmt"
-	databaseadapters "golang-web-core/srv/database_adapters"
 	"golang-web-core/util"
-	"reflect"
 )
 
 type Imdb struct {
-	databaseadapters.ConnectionConfig
 	Data map[string][]any
 }
 
-func NewImdbAdapter(connectionConfig databaseadapters.ConnectionConfig) *Imdb {
+func NewImdbAdapter() *Imdb {
 	return &Imdb{
-		ConnectionConfig: connectionConfig,
-		Data:             map[string][]any{},
+		Data: map[string][]any{},
 	}
-}
-
-func (db Imdb) Name() string {
-	return reflect.TypeOf(db).Name()
-}
-
-func (db Imdb) Connection() databaseadapters.ConnectionConfig {
-	return db.ConnectionConfig
-}
-
-func (db Imdb) TestConnection() error {
-	return nil
-}
-
-func (db *Imdb) ApplyConfig(config databaseadapters.ConnectionConfig) {
-	db.ConnectionConfig = config
 }
 
 func (db *Imdb) Insert(modelName string, object any) {

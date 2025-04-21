@@ -2,7 +2,7 @@ package srv
 
 import (
 	"fmt"
-	"golang-web-core/app/routes"
+	"golang-web-core/routes"
 	"golang-web-core/srv/cfg"
 	"golang-web-core/srv/route"
 	"golang-web-core/util"
@@ -45,13 +45,6 @@ func (s *Server) Start() error {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
-	}
-
-	if s.Config.Database.Adapter != nil {
-		err = s.TestDatabase()
-		if err != nil {
-			return err
-		}
 	}
 
 	s.RegisterHandleShutdown(&server)
