@@ -2,10 +2,7 @@ package mongo
 
 import (
 	"context"
-	"fmt"
-	databaseadapters "golang-web-core/srv/database_adapters"
 	"golang-web-core/util"
-	"reflect"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -14,35 +11,15 @@ import (
 )
 
 type Mongo struct {
-	databaseadapters.ConnectionConfig
+	Config
 	LogTransactions bool
 }
 
-func NewMongoAdapter(connectionConfig databaseadapters.ConnectionConfig, logTransactions bool) *Mongo {
+func NewMongoAdapter(config Config, logTransactions bool) *Mongo {
 	return &Mongo{
-		ConnectionConfig: connectionConfig,
-		LogTransactions:  logTransactions,
+		Config:          config,
+		LogTransactions: logTransactions,
 	}
-}
-
-func (m Mongo) Name() string {
-	return reflect.TypeOf(m).Name()
-}
-
-func (m Mongo) Connection() databaseadapters.ConnectionConfig {
-	return m.ConnectionConfig
-}
-
-func (m Mongo) ConnectionString() string {
-	authAndHost := m.Hostname
-	if m.UsingAuth() {
-		authAndHost = fmt.Sprintf("%v:%v@%v", m.Username, m.Password, m.Hostname)
-	}
-	return fmt.Sprintf("mongodb://%v/%v", authAndHost, m.Database)
-}
-
-func (m *Mongo) ApplyConfig(config databaseadapters.ConnectionConfig) {
-	m.ConnectionConfig = config
 }
 
 func (m Mongo) TestConnection() error {

@@ -48,14 +48,13 @@ func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.Handl
 }
 
 func (c ApplicationController) Favicon(rw http.ResponseWriter, req *http.Request) {
-	http.ServeFile(rw, req, "app/favicon.ico")
+	http.ServeFile(rw, req, "favicon.ico")
 }
 
 func (c ApplicationController) setupControllers() error {
 	controllers := []Controller{
 		c,
 		// this is where you initialize your controllers. if you do not initialize your controllers here, they will not be usable
-		NewTestController(c.Config),
 	}
 
 	// everything below here should be left untouched

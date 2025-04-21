@@ -2,7 +2,7 @@ package srv
 
 import (
 	"fmt"
-	"golang-web-core/app/controllers"
+	"golang-web-core/controllers"
 	"net/http"
 	"slices"
 )

@@ -2,8 +2,7 @@ package srv
 
 import (
 	"context"
-	"golang-web-core/app/controllers"
-	"golang-web-core/srv/cfg"
+	"golang-web-core/controllers"
 	"golang-web-core/srv/route"
 	"golang-web-core/util"
 	"log"
@@ -40,9 +39,7 @@ func HandleRequest(appController controllers.ApplicationController, route route.
 
 		params, err := util.GetParams(req)
 		if err == nil {
-			if appController.Config.Environment == cfg.Dev {
-				log.Printf("%v Params: %v\n", req.Header.Get("X-Request-ID"), params)
-			}
+			log.Printf("%v Params: %v\n", req.Header.Get("X-Request-ID"), params)
 		}
 		if params == nil {
 			params = map[string]any{}

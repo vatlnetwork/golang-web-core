@@ -1,8 +1,6 @@
 package cfg
 
 import (
-	"golang-web-core/srv/database_adapters/imdb"
-	"golang-web-core/srv/database_adapters/mongo"
 	"golang-web-core/util"
 	"os"
 	"strconv"
@@ -11,60 +9,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Environment string
-
-const (
-	Dev  Environment = "dev"
-	Prod Environment = "prod"
-)
-
-func GetEnvironment() Environment {
-	env := os.Getenv("GWC_ENV")
-	if env == "prod" || env == "production" {
-		return Prod
-	}
-
-	args := os.Args
-	for i, arg := range args {
-		if arg == "-e" {
-			env := args[i+1]
-			if env == "prod" {
-				return Prod
-			}
-		}
-	}
-
-	return Dev
-}
-
-func GetEnvironmentConfig() Config {
-	env := GetEnvironment()
-
-	if env == Prod {
-		return Production()
-	}
-
-	return Development()
-}
-
 func FromArgs() (Config, error) {
 	err := godotenv.Load()
 	if err != nil {
 		return Config{}, err
 	}
 
-	config := GetEnvironmentConfig()
+	config := Default()
 
 	// check to see if there are environment variables
 	port := os.Getenv("GWC_PORT")
 	certPath := os.Getenv("GWC_CERT_PATH")
 	keyPath := os.Getenv("GWC_KEY_PATH")
 	enablePublicFS := os.Getenv("GWC_ENABLE_PUBLIC_FS")
-	databaseAdapter := os.Getenv("GWC_DB_ADAPTER")
-	databaseHostname := os.Getenv("GWC_DB_HOSTNAME")
-	databaseName := os.Getenv("GWC_DB_NAME")
-	databaseUsername := os.Getenv("GWC_DB_USERNAME")
-	databasePassword := os.Getenv("GWC_DB_PASSWORD")
 
 	// port
 	if port != "" {
@@ -91,34 +48,6 @@ func FromArgs() (Config, error) {
 	// public fs
 	if strings.ToLower(enablePublicFS) == "false" || strings.ToLower(enablePublicFS) == "no" {
 		config.PublicFS = false
-	}
-
-	// database
-	switch databaseAdapter {
-	case "imdb":
-		config.Database.Connection = imdb.DefaultConfig()
-		config.Database.Adapter = imdb.NewImdbAdapter(config.Database.Connection)
-	case "mongo":
-		config.Database.Connection = mongo.DefaultConfig()
-		config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, config.Environment == Dev)
-	case "none":
-		config.Database.Adapter = nil
-	}
-	if databaseHostname != "" {
-		config.Database.Connection.Hostname = databaseHostname
-		config.Database.Adapter.ApplyConfig(config.Database.Connection)
-	}
-	if databaseName != "" {
-		config.Database.Connection.Database = databaseName
-		config.Database.Adapter.ApplyConfig(config.Database.Connection)
-	}
-	if databaseUsername != "" {
-		config.Database.Connection.Username = databaseUsername
-		config.Database.Adapter.ApplyConfig(config.Database.Connection)
-	}
-	if databasePassword != "" {
-		config.Database.Connection.Password = databasePassword
-		config.Database.Adapter.ApplyConfig(config.Database.Connection)
 	}
 
 	args := os.Args
@@ -150,35 +79,6 @@ func FromArgs() (Config, error) {
 		}
 		if arg == "--disable-public-fs" {
 			config.PublicFS = false
-		}
-		if arg == "--db-host" {
-			config.Database.Connection.Hostname = args[i+1]
-			config.Database.Adapter.ApplyConfig(config.Database.Connection)
-		}
-		if arg == "--db-name" {
-			config.Database.Connection.Database = args[i+1]
-			config.Database.Adapter.ApplyConfig(config.Database.Connection)
-		}
-		if arg == "--db-user" {
-			config.Database.Connection.Username = args[i+1]
-			config.Database.Adapter.ApplyConfig(config.Database.Connection)
-		}
-		if arg == "--db-pass" {
-			config.Database.Connection.Password = args[i+1]
-			config.Database.Adapter.ApplyConfig(config.Database.Connection)
-		}
-		if arg == "--db-adapter" {
-			switch args[i+1] {
-			case "imdb":
-				config.Database.Connection = imdb.DefaultConfig()
-				config.Database.Adapter = imdb.NewImdbAdapter(config.Database.Connection)
-			case "mongo":
-				config.Database.Connection = mongo.DefaultConfig()
-				config.Database.Adapter = mongo.NewMongoAdapter(config.Database.Connection, config.Environment == Dev)
-			}
-		}
-		if arg == "--no-db" {
-			config.Database.Adapter = nil
 		}
 	}
 
