@@ -2,7 +2,7 @@ package imdb
 
 import (
 	"fmt"
-	"golang-web-core/util"
+	"inventory-app/util"
 )
 
 type Imdb struct {

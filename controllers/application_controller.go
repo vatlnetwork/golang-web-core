@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"golang-web-core/srv/cfg"
-	"golang-web-core/util"
+	"inventory-app/srv/cfg"
+	"inventory-app/util"
 	"net/http"
 	"reflect"
 )

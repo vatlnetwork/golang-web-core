@@ -1,9 +1,9 @@
 package main
 
 import (
-	"golang-web-core/srv"
-	"golang-web-core/srv/cfg"
-	"golang-web-core/util"
+	"inventory-app/srv"
+	"inventory-app/srv/cfg"
+	"inventory-app/util"
 )
 
 func main() {

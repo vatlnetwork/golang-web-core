@@ -2,8 +2,8 @@ package render
 
 import (
 	"fmt"
-	"golang-web-core/srv/srverr"
 	"html/template"
+	"inventory-app/srv/srverr"
 	"net/http"
 )
 

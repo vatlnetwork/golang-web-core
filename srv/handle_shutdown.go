@@ -2,7 +2,7 @@ package srv
 
 import (
 	"context"
-	"golang-web-core/util"
+	"inventory-app/util"
 	"log"
 	"net/http"
 	"os"

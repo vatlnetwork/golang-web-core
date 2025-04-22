@@ -1,7 +1,7 @@
 package cfg
 
 import (
-	"golang-web-core/util"
+	"inventory-app/util"
 	"os"
 	"strconv"
 	"strings"

@@ -1,7 +1,7 @@
 package srv
 
 import (
-	"golang-web-core/util"
+	"inventory-app/util"
 	"net/http"
 )
 

@@ -2,10 +2,10 @@ package srv
 
 import (
 	"fmt"
-	"golang-web-core/routes"
-	"golang-web-core/srv/cfg"
-	"golang-web-core/srv/route"
-	"golang-web-core/util"
+	"inventory-app/routes"
+	"inventory-app/srv/cfg"
+	"inventory-app/srv/route"
+	"inventory-app/util"
 	"net"
 	"net/http"
 )

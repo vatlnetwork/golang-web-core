@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"golang-web-core/controllers"
-	"golang-web-core/srv/cfg"
-	"golang-web-core/srv/route"
+	"inventory-app/controllers"
+	"inventory-app/srv/cfg"
+	"inventory-app/srv/route"
 	"net/http"
 )
 

@@ -1,4 +1,4 @@
-module golang-web-core
+module inventory-app
 
 go 1.24.1
 

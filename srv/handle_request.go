@@ -2,9 +2,9 @@ package srv
 
 import (
 	"context"
-	"golang-web-core/controllers"
-	"golang-web-core/srv/route"
-	"golang-web-core/util"
+	"inventory-app/controllers"
+	"inventory-app/srv/route"
+	"inventory-app/util"
 	"log"
 	"math/rand"
 	"net/http"
