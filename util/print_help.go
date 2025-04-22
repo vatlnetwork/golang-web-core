@@ -9,6 +9,7 @@ func PrintHelp() {
 	fmt.Println("   --cert-path: (default: none) provide the path for your ssl certificate")
 	fmt.Println("   --key-path: (default: none) provide the path for your ssl certificate key")
 	fmt.Println("   --disable-public-fs: if this argument is provided, the public file server will be disabled")
+	fmt.Println("   -e: [dev, development, prod, production](default: development) specify the environment your application is running in")
 	fmt.Println("   --help: display this help text")
 	fmt.Println("")
 	fmt.Println("All environment variables are optional. Please note that environment variables are overridden by command line arguments")
@@ -17,4 +18,5 @@ func PrintHelp() {
 	fmt.Println("   GWC_CERT_PATH: specify an ssl certificate file path")
 	fmt.Println("   GWC_KEY_PATH: specify an ssl certificate key file path")
 	fmt.Println("   GWC_ENABLE_PUBLIC_FS: [false, no] specify one of the available values to disable the public file server")
+	fmt.Println("   GWC_ENV: [development, production] specify the environment your application is running in")
 }

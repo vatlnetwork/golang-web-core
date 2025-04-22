@@ -5,10 +5,18 @@ import (
 	"os"
 )
 
+type Environment string
+
+const (
+	Development Environment = "development"
+	Production  Environment = "production"
+)
+
 type Config struct {
 	Port     int
 	SSL      SSL
 	PublicFS bool
+	Env      Environment
 }
 
 func (c Config) IsSSL() bool {
