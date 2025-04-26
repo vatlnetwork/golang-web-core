@@ -7,10 +7,17 @@ import (
 )
 
 func main() {
-	cfg, err := cfg.FromArgs()
+	file := "default"
+	_, cfgFlag := cfg.GetArg("--config")
+	if cfgFlag != "" {
+		file = cfgFlag
+	}
+
+	cfg, err := cfg.FromFile(file)
 	if err != nil {
 		util.LogFatal(err)
 	}
+
 	srv, err := srv.NewServer(cfg)
 	if err != nil {
 		util.LogFatal(err)
