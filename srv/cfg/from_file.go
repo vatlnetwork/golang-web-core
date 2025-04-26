@@ -33,5 +33,10 @@ func FromFile(file string) (Config, error) {
 		return Config{}, err
 	}
 
+	err = config.Verify()
+	if err != nil {
+		return Config{}, err
+	}
+
 	return config, nil
 }
