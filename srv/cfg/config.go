@@ -13,10 +13,10 @@ const (
 )
 
 type Config struct {
-	Port     int
-	SSL      SSL
-	PublicFS bool
-	Env      Environment
+	Port     int         `json:"port"`
+	SSL      SSL         `json:"ssl"`
+	PublicFS bool        `json:"enablePublicFS"`
+	Env      Environment `json:"env"`
 }
 
 func (c Config) IsSSL() bool {
@@ -24,8 +24,8 @@ func (c Config) IsSSL() bool {
 }
 
 type SSL struct {
-	CertPath string
-	KeyPath  string
+	CertPath string `json:"certPath"`
+	KeyPath  string `json:"keyPath"`
 }
 
 func (s *SSL) SetCertPath(path string) error {
