@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type Transaction struct {
 	Id          string  `json:"id"`
@@ -12,7 +15,15 @@ type Transaction struct {
 	GroupId     string  `json:"groupId,omitempty"`
 }
 
-func NewTransaction(userId string, amount float64, description, groupId string) Transaction {
+func NewTransaction(userId string, amount float64, description, groupId string) (Transaction, error) {
+	if userId == "" {
+		return Transaction{}, errors.New("user id is required")
+	}
+
+	if amount == 0 {
+		return Transaction{}, errors.New("amount is required")
+	}
+
 	return Transaction{
 		UserId:      userId,
 		Amount:      amount,
@@ -20,5 +31,5 @@ func NewTransaction(userId string, amount float64, description, groupId string) 
 		Year:        time.Now().Year(),
 		Description: description,
 		GroupId:     groupId,
-	}
+	}, nil
 }
