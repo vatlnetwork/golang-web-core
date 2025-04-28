@@ -5,5 +5,9 @@
     "keyPath": ""
   },
   "enablePublicFS": true,
-  "env": "development"
+  "env": "development",
+  "mongo": {
+    "hostname": "localhost:27017",
+    "database": "inventoryApp"
+  }
 }

@@ -2,6 +2,7 @@ package cfg
 
 import (
 	"fmt"
+	"inventory-app/util/database_adapters/mongo"
 	"os"
 )
 
@@ -13,10 +14,11 @@ const (
 )
 
 type Config struct {
-	Port     int         `json:"port"`
-	SSL      SSL         `json:"ssl"`
-	PublicFS bool        `json:"enablePublicFS"`
-	Env      Environment `json:"env"`
+	Port     int          `json:"port"`
+	SSL      SSL          `json:"ssl"`
+	PublicFS bool         `json:"enablePublicFS"`
+	Env      Environment  `json:"env"`
+	Mongo    mongo.Config `json:"mongo"`
 }
 
 func (c Config) IsSSL() bool {
