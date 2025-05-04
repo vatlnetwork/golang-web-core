@@ -5,6 +5,17 @@ import (
 	"log"
 )
 
+func WrapColor(color, format string, parts ...any) string {
+	strng := fmt.Sprintf(format, parts...)
+
+	_, ok := Colors[color]
+	if ok {
+		color = Colors[color]
+	}
+
+	return fmt.Sprintf("\033[38;2;%vm%v\033[0m", color, strng)
+}
+
 func PrintColor(color, format string, parts ...any) {
 	strng := fmt.Sprintf(format, parts...)
 
