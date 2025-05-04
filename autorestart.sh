@@ -47,4 +47,6 @@ while true; do
   # Clean up
   rm $TMP_STATUS
   rm golang-web-core 2>/dev/null || true
+
+  clear
 done
