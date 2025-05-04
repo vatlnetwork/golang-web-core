@@ -57,4 +57,5 @@ var Colors map[string]string = map[string]string{
 	"lightblue":   "150;150;255",
 	"lightred":    "255;150;150",
 	"lightyellow": "255;255;150",
+	"brown":       "139;69;19",
 }
