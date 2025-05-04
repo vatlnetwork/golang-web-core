@@ -2,6 +2,7 @@
 
 # this requires a linux system in order to run
 while true; do
+  echo "-------------------------------------------------------------------------------------------"
   # Compile the application
   go build
   
@@ -21,6 +22,8 @@ while true; do
   # Wait for the main process to terminate
   wait $PID
   EXIT_CODE=$?
+
+  echo "-------------------------------------------------------------------------------------------"
   
   # Kill file watcher if it's still running
   kill $INOTIFY_PID 2>/dev/null || true
