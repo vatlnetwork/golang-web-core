@@ -22,15 +22,14 @@ func NewAuthController(sessionManager domain.SessionManager) AuthController {
 }
 
 func NewAuthControllerFromConfig(config cfg.Config) (AuthController, error) {
-	if !config.Mongo.IsEnabled() {
-		return AuthController{}, fmt.Errorf("mongo is not enabled")
-	}
-
 	var userRepo domain.UserRepository
 	var sessionRepo domain.SessionRepository
 
 	switch config.UserRepository {
 	case "MongoUserRepository":
+		if !config.Mongo.IsEnabled() {
+			return AuthController{}, fmt.Errorf("mongo is not enabled")
+		}
 		userRepo = userrepo.NewMongoUserRepository(config.Mongo, config.Env == cfg.Development)
 	default:
 		return AuthController{}, fmt.Errorf("invalid user repository: %v", config.UserRepository)
@@ -38,6 +37,9 @@ func NewAuthControllerFromConfig(config cfg.Config) (AuthController, error) {
 
 	switch config.SessionRepository {
 	case "MongoSessionRepository":
+		if !config.Mongo.IsEnabled() {
+			return AuthController{}, fmt.Errorf("mongo is not enabled")
+		}
 		sessionRepo = sessionrepo.NewMongoSessionRepository(config.Mongo, config.Env == cfg.Development)
 	default:
 		return AuthController{}, fmt.Errorf("invalid session repository: %v", config.SessionRepository)
