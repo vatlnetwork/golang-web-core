@@ -64,4 +64,10 @@ func (a AuthController) Routes() []route.Route {
 	return []route.Route{}
 }
 
+func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {}
+
+func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {}
+
+func (a AuthController) CurrentUser(rw http.ResponseWriter, req *http.Request) {}
+
 var _ Controller = AuthController{}

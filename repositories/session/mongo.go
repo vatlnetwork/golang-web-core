@@ -171,7 +171,7 @@ func (m MongoSessionRepository) GetSession(sessionId string) (domain.Session, er
 	}
 
 	if len(mongoSessions) == 0 {
-		return domain.Session{}, errors.New("session not found")
+		return domain.Session{}, errors.New(domain.ErrorSessionNotFound)
 	}
 
 	return mongoSessions[0].ToDomain(), nil

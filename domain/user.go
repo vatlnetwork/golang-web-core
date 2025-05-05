@@ -8,6 +8,8 @@ import (
 )
 
 const emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+const minPasswordLength = 6
+const maxPasswordLength = 128
 
 type User struct {
 	Id                string `json:"id"`
@@ -20,7 +22,7 @@ func NewUser(email, password string) (User, error) {
 		return User{}, errors.New("invalid email")
 	}
 
-	if len(password) < 6 || len(password) > 128 {
+	if len(password) < minPasswordLength || len(password) > maxPasswordLength {
 		return User{}, errors.New("password must be between 6 and 128 characters")
 	}
 

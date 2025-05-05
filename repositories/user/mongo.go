@@ -110,7 +110,7 @@ func (m MongoUserRepository) GetUser(userId string) (domain.User, error) {
 	}
 
 	if len(mongoUsers) == 0 {
-		return domain.User{}, errors.New("user not found")
+		return domain.User{}, errors.New(domain.ErrorUserNotFound)
 	}
 
 	return mongoUsers[0].ToDomain(), nil
@@ -140,7 +140,7 @@ func (m MongoUserRepository) GetUserByEmail(email string) (domain.User, error) {
 	}
 
 	if len(mongoUsers) == 0 {
-		return domain.User{}, errors.New("user not found")
+		return domain.User{}, errors.New(domain.ErrorUserNotFound)
 	}
 
 	return mongoUsers[0].ToDomain(), nil

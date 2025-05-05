@@ -1,5 +1,7 @@
 package domain
 
+const ErrorSessionNotFound string = "session not found"
+
 type SessionRepository interface {
 	CreateSession(session Session) (Session, error)
 	GetSession(sessionId string) (Session, error)
