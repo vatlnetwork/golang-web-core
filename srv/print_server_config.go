@@ -2,7 +2,7 @@ package srv
 
 import (
 	"fmt"
-	"golang-web-core/util"
+	"inventory-app/util"
 	"strings"
 )
 
@@ -38,5 +38,13 @@ func PrintServerConfig(server *Server) {
 		printLine(2, "Key Path", c.SSL.KeyPath, "")
 	}
 	printLine(1, "Number of Routes", len(server.Routes), "lightgreen")
+	printLine(0, "Mongo Enabled", c.Mongo.IsEnabled(), "lightblue")
+	if c.Mongo.IsEnabled() {
+		printLine(1, "Hostname", c.Mongo.Hostname, "brown")
+		printLine(1, "Database", c.Mongo.Database, "brown")
+		printLine(1, "Using Auth", c.Mongo.UsingAuth(), "lightblue")
+	}
+	printLine(0, "Transaction Repository", c.TransactionRepository, "brown")
+	printLine(0, "Transaction Group Repository", c.TransactionGroupRepository, "brown")
 	fmt.Println("")
 }

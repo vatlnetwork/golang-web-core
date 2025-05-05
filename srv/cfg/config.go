@@ -13,12 +13,18 @@ const (
 	Production  Environment = "production"
 )
 
+type Server struct {
+	Port     int         `json:"port"`
+	SSL      SSL         `json:"ssl"`
+	PublicFS bool        `json:"enablePublicFS"`
+	Env      Environment `json:"env"`
+}
+
 type Config struct {
-	Port     int          `json:"port"`
-	SSL      SSL          `json:"ssl"`
-	PublicFS bool         `json:"enablePublicFS"`
-	Env      Environment  `json:"env"`
-	Mongo    mongo.Config `json:"mongo"`
+	Server                     `json:"server"`
+	Mongo                      mongo.Config `json:"mongo"`
+	TransactionRepository      string       `json:"transactionRepository"`
+	TransactionGroupRepository string       `json:"transactionGroupRepository"`
 }
 
 func (c Config) IsSSL() bool {

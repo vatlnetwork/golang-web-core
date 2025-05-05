@@ -52,8 +52,20 @@ func (c ApplicationController) Favicon(rw http.ResponseWriter, req *http.Request
 }
 
 func (c ApplicationController) setupControllers() error {
+	transactionsController, err := NewTransactionsControllerFromConfig(c.Config)
+	if err != nil {
+		return err
+	}
+
+	transactionGroupsController, err := NewTransactionGroupsControllerFromConfig(c.Config)
+	if err != nil {
+		return err
+	}
+
 	controllers := []Controller{
 		c,
+		transactionsController,
+		transactionGroupsController,
 		// this is where you initialize your controllers. if you do not initialize your controllers here, they will not be usable
 	}
 
