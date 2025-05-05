@@ -21,6 +21,10 @@ func NewTransactionGroupsController(transactionGroupRepo domain.TransactionGroup
 }
 
 func NewTransactionGroupsControllerFromConfig(config cfg.Config) (TransactionGroupsController, error) {
+	if !config.Mongo.IsEnabled() {
+		return TransactionGroupsController{}, fmt.Errorf("mongo is not enabled")
+	}
+
 	var transactionGroupRepo domain.TransactionGroupRepository
 
 	switch config.TransactionGroupRepository {
