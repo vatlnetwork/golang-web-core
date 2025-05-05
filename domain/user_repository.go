@@ -1,6 +1,7 @@
 package domain
 
 const ErrorUserNotFound string = "user not found"
+const ErrorUserAlreadyExists string = "user already exists"
 
 type UserRepository interface {
 	CreateUser(user User) (User, error)

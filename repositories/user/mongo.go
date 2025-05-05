@@ -28,6 +28,16 @@ func (m MongoUserRepository) adapter() *mongo.Mongo {
 
 // CreateUser implements domain.UserRepository.
 func (m MongoUserRepository) CreateUser(user domain.User) (domain.User, error) {
+	matchingUser, err := m.GetUserByEmail(user.Email)
+	if err != nil {
+		if err.Error() != domain.ErrorUserNotFound {
+			return domain.User{}, err
+		}
+	}
+	if matchingUser.Id != "" {
+		return domain.User{}, errors.New(domain.ErrorUserAlreadyExists)
+	}
+
 	adapter := m.adapter()
 
 	client, ctx, cancel, err := adapter.Connect()
