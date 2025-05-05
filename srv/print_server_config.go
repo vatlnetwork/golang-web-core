@@ -28,7 +28,7 @@ func printLine(indent int, label string, value any, valueColor string) {
 func PrintServerConfig(server *Server) {
 	c := server.Config
 
-	printLine(0, "Server Config", nil, "")
+	printLine(0, "Server Config", "", "")
 	printLine(1, "Environment", c.Env, "brown")
 	printLine(1, "Port", c.Port, "lightgreen")
 	printLine(1, "Public FS Enabled", c.PublicFS, "lightblue")
@@ -37,6 +37,6 @@ func PrintServerConfig(server *Server) {
 		printLine(2, "Cert Path", c.SSL.CertPath, "")
 		printLine(2, "Key Path", c.SSL.KeyPath, "")
 	}
-	printLine(1, "Number of Routes", len(server.Routes), "lightblue")
+	printLine(1, "Number of Routes", len(server.Routes), "lightgreen")
 	fmt.Println("")
 }
