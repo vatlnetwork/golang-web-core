@@ -62,10 +62,16 @@ func (c ApplicationController) setupControllers() error {
 		return err
 	}
 
+	authController, err := NewAuthControllerFromConfig(c.Config)
+	if err != nil {
+		return err
+	}
+
 	controllers := []Controller{
 		c,
 		transactionsController,
 		transactionGroupsController,
+		authController,
 		// this is where you initialize your controllers. if you do not initialize your controllers here, they will not be usable
 	}
 

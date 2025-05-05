@@ -13,5 +13,7 @@
     "database": "inventoryApp"
   },
   "transactionRepository": "MongoTransactionRepository",
-  "transactionGroupRepository": "MongoTransactionGroupRepository"
+  "transactionGroupRepository": "MongoTransactionGroupRepository",
+  "userRepository": "MongoUserRepository",
+  "sessionRepository": "MongoSessionRepository"
 }

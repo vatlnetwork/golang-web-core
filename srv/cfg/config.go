@@ -25,6 +25,8 @@ type Config struct {
 	Mongo                      mongo.Config `json:"mongo"`
 	TransactionRepository      string       `json:"transactionRepository"`
 	TransactionGroupRepository string       `json:"transactionGroupRepository"`
+	UserRepository             string       `json:"userRepository"`
+	SessionRepository          string       `json:"sessionRepository"`
 }
 
 func (c Config) IsSSL() bool {

@@ -46,5 +46,7 @@ func PrintServerConfig(server *Server) {
 	}
 	printLine(0, "Transaction Repository", c.TransactionRepository, "brown")
 	printLine(0, "Transaction Group Repository", c.TransactionGroupRepository, "brown")
+	printLine(0, "User Repository", c.UserRepository, "brown")
+	printLine(0, "Session Repository", c.SessionRepository, "brown")
 	fmt.Println("")
 }
