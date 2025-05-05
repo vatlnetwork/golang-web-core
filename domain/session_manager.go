@@ -57,6 +57,15 @@ func (s SessionManager) GetCurrentSession(req *http.Request) (*Session, User, er
 		return nil, User{}, err
 	}
 
+	remoteIP, _, err := net.SplitHostPort(req.RemoteAddr)
+	if err != nil {
+		return nil, User{}, err
+	}
+
+	if !session.Validate(remoteIP) {
+		return nil, User{}, nil
+	}
+
 	user, err := s.userRepository.GetUser(session.UserId)
 	if err != nil {
 		return nil, User{}, err

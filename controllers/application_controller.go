@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"inventory-app/domain"
+	sessionrepo "inventory-app/repositories/session"
+	userrepo "inventory-app/repositories/user"
 	"inventory-app/srv/cfg"
+	"inventory-app/srv/srverr"
 	"inventory-app/util"
 	"net/http"
 	"reflect"
@@ -12,16 +16,43 @@ import (
 
 type ApplicationController struct {
 	cfg.Config
-	Controllers map[string]Controller
+	Controllers    map[string]Controller
+	sessionManager domain.SessionManager
 }
 
 // this verifies that ApplicationController fully implements Controller
 var ApplicationControllerVerifier Controller = ApplicationController{}
 
 func NewApplicationController(config cfg.Config) (ApplicationController, error) {
+	var userRepo domain.UserRepository
+	var sessionRepo domain.SessionRepository
+
+	switch config.UserRepository {
+	case "MongoUserRepository":
+		if !config.Mongo.IsEnabled() {
+			return ApplicationController{}, fmt.Errorf("mongo is not enabled")
+		}
+		userRepo = userrepo.NewMongoUserRepository(config.Mongo, config.Env == cfg.Development)
+	default:
+		return ApplicationController{}, fmt.Errorf("invalid user repository: %v", config.UserRepository)
+	}
+
+	switch config.SessionRepository {
+	case "MongoSessionRepository":
+		if !config.Mongo.IsEnabled() {
+			return ApplicationController{}, fmt.Errorf("mongo is not enabled")
+		}
+		sessionRepo = sessionrepo.NewMongoSessionRepository(config.Mongo, config.Env == cfg.Development)
+	default:
+		return ApplicationController{}, fmt.Errorf("invalid session repository: %v", config.SessionRepository)
+	}
+
+	sessionManager := domain.NewSessionManager(sessionRepo, userRepo)
+
 	cont := ApplicationController{
-		Config:      config,
-		Controllers: map[string]Controller{},
+		Config:         config,
+		Controllers:    map[string]Controller{},
+		sessionManager: sessionManager,
 	}
 
 	err := cont.setupControllers()
@@ -43,6 +74,17 @@ func (c ApplicationController) BeforeAction(handler http.HandlerFunc) http.Handl
 		// 	http.Error(rw, "This is a test internal server error", http.StatusInternalServerError)
 		// 	return
 		// }
+
+		session, user, err := c.sessionManager.GetCurrentSession(req)
+		if err != nil {
+			srverr.Handle500(rw, err)
+			return
+		}
+
+		if session != nil {
+			req = c.sessionManager.SetContextUser(req, user)
+		}
+
 		handler(rw, req)
 	}
 }
