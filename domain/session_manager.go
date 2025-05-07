@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"time"
 )
 
 const AuthHeaderKey string = "Authorization"
@@ -135,6 +136,12 @@ func (s SessionManager) HandleSignIn(req *http.Request, email, firstName, lastNa
 	}
 
 	session, err := s.sessionRepository.CreateSession(newSession)
+	if err != nil {
+		return Session{}, User{}, err
+	}
+
+	user.LastSignIn = time.Now()
+	user, err = s.userRepository.UpdateUser(user)
 	if err != nil {
 		return Session{}, User{}, err
 	}

@@ -3,6 +3,7 @@ package domain
 import (
 	"errors"
 	"regexp"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,11 +16,14 @@ const ErrorInvalidEmail = "invalid email"
 const ErrorInvalidPassword = "password must be between 6 and 128 characters"
 
 type User struct {
-	Id                string `json:"id"`
-	Email             string `json:"email"`
-	FirstName         string `json:"firstName"`
-	LastName          string `json:"lastName"`
-	EncryptedPassword string `json:"encryptedPassword"`
+	Id                string    `json:"id"`
+	Email             string    `json:"email"`
+	FirstName         string    `json:"firstName"`
+	LastName          string    `json:"lastName"`
+	EncryptedPassword string    `json:"encryptedPassword"`
+	CreatedAt         time.Time `json:"createdAt"`
+	UpdatedAt         time.Time `json:"updatedAt"`
+	LastSignIn        time.Time `json:"lastSignIn"`
 }
 
 func NewUser(email, firstName, lastName, password string) (User, error) {
@@ -46,6 +50,8 @@ func NewUser(email, firstName, lastName, password string) (User, error) {
 		FirstName:         firstName,
 		LastName:          lastName,
 		EncryptedPassword: string(encryptedPassword),
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
 	}, nil
 }
 

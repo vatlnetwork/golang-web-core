@@ -4,6 +4,7 @@ import (
 	"errors"
 	"inventory-app/domain"
 	"inventory-app/util/database_adapters/mongo"
+	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -165,6 +166,8 @@ func (m MongoUserRepository) UpdateUser(user domain.User) (domain.User, error) {
 		return domain.User{}, err
 	}
 	defer adapter.Close(client, ctx, cancel)
+
+	user.UpdatedAt = time.Now()
 
 	mongoUser, err := MongoUserFromDomain(user)
 	if err != nil {
