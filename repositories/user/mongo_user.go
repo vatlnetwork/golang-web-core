@@ -10,6 +10,8 @@ import (
 type MongoUser struct {
 	Id                bson.ObjectID `bson:"_id,omitempty"`
 	Email             string        `bson:"email"`
+	FirstName         string        `bson:"firstName"`
+	LastName          string        `bson:"lastName"`
 	EncryptedPassword string        `bson:"encryptedPassword"`
 }
 
@@ -17,6 +19,8 @@ func (m MongoUser) ToDomain() domain.User {
 	return domain.User{
 		Id:                m.Id.Hex(),
 		Email:             m.Email,
+		FirstName:         m.FirstName,
+		LastName:          m.LastName,
 		EncryptedPassword: m.EncryptedPassword,
 	}
 }
@@ -24,6 +28,8 @@ func (m MongoUser) ToDomain() domain.User {
 func MongoUserFromDomain(user domain.User) (MongoUser, error) {
 	mongoUser := MongoUser{
 		Email:             user.Email,
+		FirstName:         user.FirstName,
+		LastName:          user.LastName,
 		EncryptedPassword: user.EncryptedPassword,
 	}
 
