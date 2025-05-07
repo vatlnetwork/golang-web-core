@@ -88,7 +88,7 @@ func (a AuthController) Routes() []route.Route {
 		{
 			Pattern:        "/auth/logout",
 			Method:         http.MethodGet,
-			Handler:        a.LocalLogin,
+			Handler:        a.Logout,
 			ControllerName: a.Name(),
 		},
 		{
@@ -159,7 +159,7 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 			Path:  "/",
 		}
 		http.SetCookie(rw, cookie)
-		http.Redirect(rw, req, "/", http.StatusSeeOther)
+		http.Redirect(rw, req, "/auth/current_user", http.StatusSeeOther)
 	} else {
 		response := localLoginResponse{
 			Session: session,
@@ -190,7 +190,7 @@ func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	if req.Method == http.MethodGet {
-		http.Redirect(rw, req, "/", http.StatusSeeOther)
+		http.Redirect(rw, req, "/auth/current_user", http.StatusSeeOther)
 	} else {
 		rw.WriteHeader(http.StatusNoContent)
 	}
