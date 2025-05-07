@@ -1,10 +1,7 @@
 package controllers
 
 import (
-	"fmt"
 	"inventory-app/domain"
-	transactionrepo "inventory-app/repositories/transaction"
-	"inventory-app/srv/cfg"
 	"inventory-app/srv/route"
 	"net/http"
 	"reflect"
@@ -18,22 +15,6 @@ func NewTransactionsController(transactionRepo domain.TransactionRepository) Tra
 	return TransactionsController{
 		transactionRepo: transactionRepo,
 	}
-}
-
-func NewTransactionsControllerFromConfig(config cfg.Config) (TransactionsController, error) {
-	var transactionRepo domain.TransactionRepository
-
-	switch config.TransactionRepository {
-	case "MongoTransactionRepository":
-		if !config.Mongo.IsEnabled() {
-			return TransactionsController{}, fmt.Errorf("mongo is not enabled")
-		}
-		transactionRepo = transactionrepo.NewMongoTransactionRepository(config.Mongo, config.Env == cfg.Development)
-	default:
-		return TransactionsController{}, fmt.Errorf("invalid transaction repository: %v", config.TransactionRepository)
-	}
-
-	return NewTransactionsController(transactionRepo), nil
 }
 
 // BeforeAction implements Controller.

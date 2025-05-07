@@ -3,12 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"inventory-app/domain"
-	moneylocationrepo "inventory-app/repositories/money_location"
-	sessionrepo "inventory-app/repositories/session"
-	userrepo "inventory-app/repositories/user"
-	"inventory-app/srv/cfg"
 	"inventory-app/srv/route"
 	"inventory-app/srv/srverr"
 	"inventory-app/util"
@@ -26,46 +21,6 @@ func NewMoneyLocationsController(moneyLocationRepo domain.MoneyLocationRepositor
 		moneyLocationRepo: moneyLocationRepo,
 		sessionManager:    sessionManager,
 	}
-}
-
-func NewMoneyLocationsControllerFromConfig(config cfg.Config) (MoneyLocationsController, error) {
-	var moneyLocationRepo domain.MoneyLocationRepository
-	var sessionRepo domain.SessionRepository
-	var userRepo domain.UserRepository
-
-	switch config.MoneyLocationRepository {
-	case "MongoMoneyLocationRepository":
-		if !config.Mongo.IsEnabled() {
-			return MoneyLocationsController{}, fmt.Errorf("mongo is not enabled")
-		}
-		moneyLocationRepo = moneylocationrepo.NewMongoMoneyLocationRepository(config.Mongo, config.Env == cfg.Development)
-	default:
-		return MoneyLocationsController{}, fmt.Errorf("invalid money location repository: %v", config.MoneyLocationRepository)
-	}
-
-	switch config.SessionRepository {
-	case "MongoSessionRepository":
-		if !config.Mongo.IsEnabled() {
-			return MoneyLocationsController{}, fmt.Errorf("mongo is not enabled")
-		}
-		sessionRepo = sessionrepo.NewMongoSessionRepository(config.Mongo, config.Env == cfg.Development)
-	default:
-		return MoneyLocationsController{}, fmt.Errorf("invalid session repository: %v", config.SessionRepository)
-	}
-
-	switch config.UserRepository {
-	case "MongoUserRepository":
-		if !config.Mongo.IsEnabled() {
-			return MoneyLocationsController{}, fmt.Errorf("mongo is not enabled")
-		}
-		userRepo = userrepo.NewMongoUserRepository(config.Mongo, config.Env == cfg.Development)
-	default:
-		return MoneyLocationsController{}, fmt.Errorf("invalid user repository: %v", config.UserRepository)
-	}
-
-	sessionManager := domain.NewSessionManager(sessionRepo, userRepo)
-
-	return NewMoneyLocationsController(moneyLocationRepo, sessionManager), nil
 }
 
 // BeforeAction implements Controller.
