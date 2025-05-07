@@ -15,5 +15,6 @@
   "transactionRepository": "MongoTransactionRepository",
   "transactionGroupRepository": "MongoTransactionGroupRepository",
   "userRepository": "MongoUserRepository",
-  "sessionRepository": "MongoSessionRepository"
+  "sessionRepository": "MongoSessionRepository",
+  "moneyLocationRepository": "MongoMoneyLocationRepository"
 }

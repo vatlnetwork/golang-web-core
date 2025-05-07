@@ -109,11 +109,17 @@ func (c ApplicationController) setupControllers() error {
 		return err
 	}
 
+	moneyLocationsController, err := NewMoneyLocationsControllerFromConfig(c.Config)
+	if err != nil {
+		return err
+	}
+
 	controllers := []Controller{
 		c,
 		transactionsController,
 		transactionGroupsController,
 		authController,
+		moneyLocationsController,
 		// this is where you initialize your controllers. if you do not initialize your controllers here, they will not be usable
 	}
 

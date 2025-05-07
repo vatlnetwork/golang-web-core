@@ -18,7 +18,6 @@ type MongoMoneyLocationRepository struct {
 func NewMongoMoneyLocationRepository(
 	connectionConfig mongo.Config,
 	logTransactions bool,
-	transactionRepo domain.TransactionRepository,
 ) MongoMoneyLocationRepository {
 	return MongoMoneyLocationRepository{
 		connectionConfig: connectionConfig,

@@ -27,6 +27,7 @@ type Config struct {
 	TransactionGroupRepository string       `json:"transactionGroupRepository"`
 	UserRepository             string       `json:"userRepository"`
 	SessionRepository          string       `json:"sessionRepository"`
+	MoneyLocationRepository    string       `json:"moneyLocationRepository"`
 }
 
 func (c Config) IsSSL() bool {
