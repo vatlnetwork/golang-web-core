@@ -102,6 +102,8 @@ func (a AuthController) Routes() []route.Route {
 
 type localLoginRequest struct {
 	Email        string `json:"email"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
 	Password     string `json:"password"`
 	StaySignedIn string `json:"staySignedIn"`
 }
@@ -142,7 +144,14 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	session, user, err := a.sessionManager.HandleSignIn(req, request.Email, request.Password, request.StaySignedIn == "yes")
+	session, user, err := a.sessionManager.HandleSignIn(
+		req,
+		request.Email,
+		request.FirstName,
+		request.LastName,
+		request.Password,
+		request.StaySignedIn == "yes",
+	)
 	if err != nil {
 		if err.Error() == domain.ErrorInvalidEmail || err.Error() == domain.ErrorInvalidPassword {
 			srverr.Handle400(rw, err)

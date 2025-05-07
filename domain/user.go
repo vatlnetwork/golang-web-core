@@ -17,10 +17,12 @@ const ErrorInvalidPassword = "password must be between 6 and 128 characters"
 type User struct {
 	Id                string `json:"id"`
 	Email             string `json:"email"`
+	FirstName         string `json:"firstName"`
+	LastName          string `json:"lastName"`
 	EncryptedPassword string `json:"encryptedPassword"`
 }
 
-func NewUser(email, password string) (User, error) {
+func NewUser(email, firstName, lastName, password string) (User, error) {
 	if !regexp.MustCompile(emailRegex).MatchString(email) {
 		return User{}, errors.New(ErrorInvalidEmail)
 	}
@@ -34,8 +36,15 @@ func NewUser(email, password string) (User, error) {
 		return User{}, err
 	}
 
+	if firstName == "" && lastName == "" {
+		firstName = "Anonymous"
+		lastName = "User"
+	}
+
 	return User{
 		Email:             email,
+		FirstName:         firstName,
+		LastName:          lastName,
 		EncryptedPassword: string(encryptedPassword),
 	}, nil
 }
