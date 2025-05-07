@@ -31,8 +31,12 @@ func GetParams(req *http.Request, maxSize ...int64) (map[string]any, error) {
 	return params, nil
 }
 
+type ParamsKeyType string
+
+const ParamsKey ParamsKeyType = "params"
+
 func GetParamsFromContext(req *http.Request) map[string]any {
-	return req.Context().Value("params").(map[string]any)
+	return req.Context().Value(ParamsKey).(map[string]any)
 }
 
 func DecodeContextParams(req *http.Request, object any) error {

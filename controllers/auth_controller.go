@@ -1,12 +1,15 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"inventory-app/domain"
 	sessionrepo "inventory-app/repositories/session"
 	userrepo "inventory-app/repositories/user"
 	"inventory-app/srv/cfg"
 	"inventory-app/srv/route"
+	"inventory-app/srv/srverr"
+	"inventory-app/util"
 	"net/http"
 	"reflect"
 )
@@ -71,6 +74,12 @@ func (a AuthController) Routes() []route.Route {
 			ControllerName: a.Name(),
 		},
 		{
+			Pattern:        "/auth/local/login",
+			Method:         http.MethodGet,
+			Handler:        a.LocalLogin,
+			ControllerName: a.Name(),
+		},
+		{
 			Pattern:        "/auth/logout",
 			Method:         http.MethodDelete,
 			Handler:        a.Logout,
@@ -85,7 +94,64 @@ func (a AuthController) Routes() []route.Route {
 	}
 }
 
-func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {}
+type localLoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type localLoginResponse struct {
+	Session domain.Session `json:"session"`
+	User    domain.User    `json:"user"`
+}
+
+func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Set("Content-Type", "application/json")
+
+	currentSession, currentUser, err := a.sessionManager.GetCurrentSession(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	if currentSession != nil {
+		response := localLoginResponse{
+			Session: *currentSession,
+			User:    currentUser,
+		}
+
+		err = json.NewEncoder(rw).Encode(response)
+		if err != nil {
+			srverr.Handle500(rw, err)
+			return
+		}
+
+		return
+	}
+
+	var request localLoginRequest
+	err = util.DecodeContextParams(req, &request)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	session, user, err := a.sessionManager.HandleSignIn(req, request.Email, request.Password)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	response := localLoginResponse{
+		Session: session,
+		User:    user,
+	}
+
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+}
 
 func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {}
 

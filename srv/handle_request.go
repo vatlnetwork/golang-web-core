@@ -3,6 +3,7 @@ package srv
 import (
 	"context"
 	"inventory-app/controllers"
+	"inventory-app/srv/cfg"
 	"inventory-app/srv/route"
 	"inventory-app/util"
 	"log"
@@ -27,10 +28,6 @@ func SetRequestID(req *http.Request) {
 	req.Header.Set("X-Request-ID", requestId)
 }
 
-type ParamsKeyType string
-
-const ParamsKey ParamsKeyType = "params"
-
 func HandleRequest(appController controllers.ApplicationController, route route.Route) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
 		SetRequestID(req)
@@ -39,13 +36,15 @@ func HandleRequest(appController controllers.ApplicationController, route route.
 
 		params, err := util.GetParams(req)
 		if err == nil {
-			log.Printf("%v Params: %v\n", req.Header.Get("X-Request-ID"), params)
+			if appController.Config.Env == cfg.Development {
+				log.Printf("%v Params: %v\n", req.Header.Get("X-Request-ID"), params)
+			}
 		}
 		if params == nil {
 			params = map[string]any{}
 		}
 
-		reqWithParams := req.WithContext(context.WithValue(req.Context(), ParamsKey, params))
+		reqWithParams := req.WithContext(context.WithValue(req.Context(), util.ParamsKey, params))
 
 		controller := appController.Controllers[route.ControllerName]
 
