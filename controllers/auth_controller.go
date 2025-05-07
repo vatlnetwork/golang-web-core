@@ -74,9 +74,21 @@ func (a AuthController) Routes() []route.Route {
 			ControllerName: a.Name(),
 		},
 		{
+			Pattern:        "/auth/local/login",
+			Method:         http.MethodGet,
+			Handler:        a.LocalLogin,
+			ControllerName: a.Name(),
+		},
+		{
 			Pattern:        "/auth/logout",
 			Method:         http.MethodDelete,
 			Handler:        a.Logout,
+			ControllerName: a.Name(),
+		},
+		{
+			Pattern:        "/auth/logout",
+			Method:         http.MethodGet,
+			Handler:        a.LocalLogin,
 			ControllerName: a.Name(),
 		},
 		{
@@ -140,15 +152,25 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response := localLoginResponse{
-		Session: session,
-		User:    user,
-	}
+	if req.Method == http.MethodGet {
+		cookie := &http.Cookie{
+			Name:  "session",
+			Value: session.Id,
+			Path:  "/",
+		}
+		http.SetCookie(rw, cookie)
+		http.Redirect(rw, req, "/", http.StatusSeeOther)
+	} else {
+		response := localLoginResponse{
+			Session: session,
+			User:    user,
+		}
 
-	err = json.NewEncoder(rw).Encode(response)
-	if err != nil {
-		srverr.Handle500(rw, err)
-		return
+		err = json.NewEncoder(rw).Encode(response)
+		if err != nil {
+			srverr.Handle500(rw, err)
+			return
+		}
 	}
 }
 
@@ -167,7 +189,11 @@ func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	rw.WriteHeader(http.StatusNoContent)
+	if req.Method == http.MethodGet {
+		http.Redirect(rw, req, "/", http.StatusSeeOther)
+	} else {
+		rw.WriteHeader(http.StatusNoContent)
+	}
 }
 
 func (a AuthController) CurrentUser(rw http.ResponseWriter, req *http.Request) {

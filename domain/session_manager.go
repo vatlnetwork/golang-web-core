@@ -8,6 +8,7 @@ import (
 )
 
 const AuthHeaderKey string = "Authorization"
+const SessionCookieName string = "session"
 
 type ContextKey string
 
@@ -44,12 +45,18 @@ func (s SessionManager) SetContextUser(req *http.Request, user User) *http.Reque
 }
 
 func (s SessionManager) GetCurrentSession(req *http.Request) (*Session, User, error) {
-	authHeader := req.Header.Get(AuthHeaderKey)
-	if authHeader == "" {
+	sessionId := req.Header.Get(AuthHeaderKey)
+	if sessionId == "" {
+		sessionCookie, err := req.Cookie(SessionCookieName)
+		if err == nil {
+			sessionId = sessionCookie.Value
+		}
+	}
+	if sessionId == "" {
 		return nil, User{}, nil
 	}
 
-	session, err := s.sessionRepository.GetSession(authHeader)
+	session, err := s.sessionRepository.GetSession(sessionId)
 	if err != nil {
 		if err.Error() == ErrorSessionNotFound {
 			return nil, User{}, nil
