@@ -11,6 +11,9 @@ const emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
 const minPasswordLength = 6
 const maxPasswordLength = 128
 
+const ErrorInvalidEmail = "invalid email"
+const ErrorInvalidPassword = "password must be between 6 and 128 characters"
+
 type User struct {
 	Id                string `json:"id"`
 	Email             string `json:"email"`
@@ -19,11 +22,11 @@ type User struct {
 
 func NewUser(email, password string) (User, error) {
 	if !regexp.MustCompile(emailRegex).MatchString(email) {
-		return User{}, errors.New("invalid email")
+		return User{}, errors.New(ErrorInvalidEmail)
 	}
 
 	if len(password) < minPasswordLength || len(password) > maxPasswordLength {
-		return User{}, errors.New("password must be between 6 and 128 characters")
+		return User{}, errors.New(ErrorInvalidPassword)
 	}
 
 	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

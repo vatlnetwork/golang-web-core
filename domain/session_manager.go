@@ -74,7 +74,7 @@ func (s SessionManager) GetCurrentSession(req *http.Request) (*Session, User, er
 	return &session, user, nil
 }
 
-func (s SessionManager) HandleSignIn(req *http.Request, email string, password string) (Session, User, error) {
+func (s SessionManager) HandleSignIn(req *http.Request, email string, password string, staySignedIn bool) (Session, User, error) {
 	user, err := s.userRepository.GetUserByEmail(email)
 	notFound := false
 	if err != nil {
@@ -121,6 +121,10 @@ func (s SessionManager) HandleSignIn(req *http.Request, email string, password s
 	newSession, err := NewSession(user.Id, remoteIP)
 	if err != nil {
 		return Session{}, User{}, err
+	}
+
+	if staySignedIn {
+		newSession.Expires = false
 	}
 
 	session, err := s.sessionRepository.CreateSession(newSession)

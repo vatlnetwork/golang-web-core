@@ -74,12 +74,6 @@ func (a AuthController) Routes() []route.Route {
 			ControllerName: a.Name(),
 		},
 		{
-			Pattern:        "/auth/local/login",
-			Method:         http.MethodGet,
-			Handler:        a.LocalLogin,
-			ControllerName: a.Name(),
-		},
-		{
 			Pattern:        "/auth/logout",
 			Method:         http.MethodDelete,
 			Handler:        a.Logout,
@@ -95,8 +89,9 @@ func (a AuthController) Routes() []route.Route {
 }
 
 type localLoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email        string `json:"email"`
+	Password     string `json:"password"`
+	StaySignedIn string `json:"staySignedIn"`
 }
 
 type localLoginResponse struct {
@@ -135,9 +130,13 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	session, user, err := a.sessionManager.HandleSignIn(req, request.Email, request.Password)
+	session, user, err := a.sessionManager.HandleSignIn(req, request.Email, request.Password, request.StaySignedIn == "yes")
 	if err != nil {
-		srverr.Handle500(rw, err)
+		if err.Error() == domain.ErrorInvalidEmail || err.Error() == domain.ErrorInvalidPassword {
+			srverr.Handle400(rw, err)
+		} else {
+			srverr.Handle500(rw, err)
+		}
 		return
 	}
 
@@ -153,8 +152,37 @@ func (a AuthController) LocalLogin(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {}
+func (a AuthController) Logout(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := a.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
 
-func (a AuthController) CurrentUser(rw http.ResponseWriter, req *http.Request) {}
+	if currentUser != nil {
+		err = a.sessionManager.HandleSignOut(currentUser.Id)
+		if err != nil {
+			srverr.Handle500(rw, err)
+			return
+		}
+	}
+
+	rw.WriteHeader(http.StatusNoContent)
+}
+
+func (a AuthController) CurrentUser(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := a.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(currentUser)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+}
 
 var _ Controller = AuthController{}
