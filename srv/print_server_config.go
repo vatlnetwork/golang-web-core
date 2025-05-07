@@ -44,9 +44,11 @@ func PrintServerConfig(server *Server) {
 		printLine(1, "Database", c.Mongo.Database, "brown")
 		printLine(1, "Using Auth", c.Mongo.UsingAuth(), "lightblue")
 	}
-	printLine(0, "Transaction Repository", c.TransactionRepository, "brown")
-	printLine(0, "Transaction Group Repository", c.TransactionGroupRepository, "brown")
-	printLine(0, "User Repository", c.UserRepository, "brown")
-	printLine(0, "Session Repository", c.SessionRepository, "brown")
+	printLine(0, "Repositories", "", "")
+	printLine(1, "Transaction Repository", c.TransactionRepository, "brown")
+	printLine(1, "Transaction Group Repository", c.TransactionGroupRepository, "brown")
+	printLine(1, "User Repository", c.UserRepository, "brown")
+	printLine(1, "Session Repository", c.SessionRepository, "brown")
+	printLine(1, "Money Location Repository", c.MoneyLocationRepository, "brown")
 	fmt.Println("")
 }
