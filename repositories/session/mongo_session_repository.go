@@ -66,12 +66,7 @@ func (m MongoSessionRepository) DeleteAllForUser(userId string) error {
 	}
 	defer adapter.Close(client, ctx, cancel)
 
-	mongoUserId, err := bson.ObjectIDFromHex(userId)
-	if err != nil {
-		return err
-	}
-
-	filter := bson.M{"userId": mongoUserId}
+	filter := bson.M{"userId": userId}
 
 	err = adapter.DeleteMany(client, ctx, sessionCollection, filter)
 	if err != nil {
@@ -116,12 +111,7 @@ func (m MongoSessionRepository) GetAllForUser(userId string) ([]domain.Session, 
 	}
 	defer adapter.Close(client, ctx, cancel)
 
-	mongoUserId, err := bson.ObjectIDFromHex(userId)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.M{"userId": mongoUserId}
+	filter := bson.M{"userId": userId}
 
 	cursor, err := adapter.Query(client, ctx, sessionCollection, filter, nil)
 	if err != nil {

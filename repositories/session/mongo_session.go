@@ -10,7 +10,7 @@ import (
 
 type MongoSession struct {
 	Id        bson.ObjectID `bson:"_id,omitempty"`
-	UserId    bson.ObjectID `bson:"userId"`
+	UserId    string        `bson:"userId"`
 	ExpiresAt time.Time     `bson:"expiresAt"`
 	Expires   bool          `bson:"expires"`
 	RemoteIP  string        `bson:"remoteIP"`
@@ -19,7 +19,7 @@ type MongoSession struct {
 func (s MongoSession) ToDomain() domain.Session {
 	return domain.Session{
 		Id:        s.Id.Hex(),
-		UserId:    s.UserId.Hex(),
+		UserId:    s.UserId,
 		ExpiresAt: s.ExpiresAt,
 		Expires:   s.Expires,
 		RemoteIP:  s.RemoteIP,
@@ -27,17 +27,8 @@ func (s MongoSession) ToDomain() domain.Session {
 }
 
 func MongoSessionFromDomain(session domain.Session) (MongoSession, error) {
-	userId, err := bson.ObjectIDFromHex(session.UserId)
-	if err != nil {
-		return MongoSession{}, err
-	}
-
-	if userId.IsZero() {
-		return MongoSession{}, errors.New("invalid user id")
-	}
-
 	mongoSession := MongoSession{
-		UserId:    userId,
+		UserId:    session.UserId,
 		ExpiresAt: session.ExpiresAt,
 		Expires:   session.Expires,
 		RemoteIP:  session.RemoteIP,

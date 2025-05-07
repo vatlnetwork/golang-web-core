@@ -1,7 +1,6 @@
 package transactiongrouprepo
 
 import (
-	"errors"
 	"inventory-app/domain"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -9,20 +8,21 @@ import (
 
 type MongoTransactionGroup struct {
 	Id          bson.ObjectID `bson:"_id,omitempty"`
-	UserId      bson.ObjectID `bson:"userId"`
+	UserId      string        `bson:"userId"`
 	Description string        `bson:"description"`
 }
 
 func (t MongoTransactionGroup) ToDomain() domain.TransactionGroup {
 	return domain.TransactionGroup{
 		Id:          t.Id.Hex(),
-		UserId:      t.UserId.Hex(),
+		UserId:      t.UserId,
 		Description: t.Description,
 	}
 }
 
 func MongoTransactionGroupFromDomain(transactionGroup domain.TransactionGroup) (MongoTransactionGroup, error) {
 	mongoTransactionGroup := MongoTransactionGroup{
+		UserId:      transactionGroup.UserId,
 		Description: transactionGroup.Description,
 	}
 
@@ -32,17 +32,6 @@ func MongoTransactionGroupFromDomain(transactionGroup domain.TransactionGroup) (
 			return MongoTransactionGroup{}, err
 		}
 		mongoTransactionGroup.Id = id
-	}
-
-	if transactionGroup.UserId != "" {
-		id, err := bson.ObjectIDFromHex(transactionGroup.UserId)
-		if err != nil {
-			return MongoTransactionGroup{}, err
-		}
-		if id.IsZero() {
-			return MongoTransactionGroup{}, errors.New("invalid user id")
-		}
-		mongoTransactionGroup.UserId = id
 	}
 
 	return mongoTransactionGroup, nil

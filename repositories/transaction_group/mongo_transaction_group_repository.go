@@ -121,12 +121,7 @@ func (m MongoTransactionGroupRepository) GetTransactionGroupsForUser(userId stri
 	}
 	defer adapter.Close(client, ctx, cancel)
 
-	mongoId, err := bson.ObjectIDFromHex(userId)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.M{"userId": mongoId}
+	filter := bson.M{"userId": userId}
 
 	cursor, err := adapter.Query(client, ctx, transactionGroupCollection, filter, nil)
 	if err != nil {

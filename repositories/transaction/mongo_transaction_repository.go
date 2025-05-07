@@ -25,6 +25,114 @@ func (m MongoTransactionRepository) adapter() *mongo.Mongo {
 	return mongo.NewMongoAdapter(m.connectionConfig, m.logTransactions)
 }
 
+// DeleteTransactionsInLocation implements domain.TransactionRepository.
+func (m MongoTransactionRepository) DeleteTransactionsInLocation(locationId string) error {
+	adapter := m.adapter()
+
+	client, ctx, cancel, err := adapter.Connect()
+	if err != nil {
+		return err
+	}
+	defer adapter.Close(client, ctx, cancel)
+
+	filter := bson.M{"moneyLocationId": locationId}
+
+	return adapter.DeleteMany(client, ctx, transactionCollection, filter)
+}
+
+// GetTransactionsByGroup implements domain.TransactionRepository.
+func (m MongoTransactionRepository) GetTransactionsByGroup(groupId string) ([]domain.Transaction, error) {
+	adapter := m.adapter()
+
+	client, ctx, cancel, err := adapter.Connect()
+	if err != nil {
+		return nil, err
+	}
+	defer adapter.Close(client, ctx, cancel)
+
+	filter := bson.M{"groupId": groupId}
+
+	cursor, err := adapter.Query(client, ctx, transactionCollection, filter, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	mongoTransactions := []MongoTransaction{}
+	err = cursor.All(ctx, &mongoTransactions)
+	if err != nil {
+		return nil, err
+	}
+
+	transactions := make([]domain.Transaction, len(mongoTransactions))
+	for i, mongoTransaction := range mongoTransactions {
+		transactions[i] = mongoTransaction.ToDomain()
+	}
+
+	return transactions, nil
+}
+
+// GetTransactionsByLocation implements domain.TransactionRepository.
+func (m MongoTransactionRepository) GetTransactionsByLocation(locationId string) ([]domain.Transaction, error) {
+	adapter := m.adapter()
+
+	client, ctx, cancel, err := adapter.Connect()
+	if err != nil {
+		return nil, err
+	}
+	defer adapter.Close(client, ctx, cancel)
+
+	filter := bson.M{"moneyLocationId": locationId}
+
+	cursor, err := adapter.Query(client, ctx, transactionCollection, filter, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	mongoTransactions := []MongoTransaction{}
+	err = cursor.All(ctx, &mongoTransactions)
+	if err != nil {
+		return nil, err
+	}
+
+	transactions := make([]domain.Transaction, len(mongoTransactions))
+	for i, mongoTransaction := range mongoTransactions {
+		transactions[i] = mongoTransaction.ToDomain()
+	}
+
+	return transactions, nil
+}
+
+// GetTransactionsByYear implements domain.TransactionRepository.
+func (m MongoTransactionRepository) GetTransactionsByYear(userId string, year int) ([]domain.Transaction, error) {
+	adapter := m.adapter()
+
+	client, ctx, cancel, err := adapter.Connect()
+	if err != nil {
+		return nil, err
+	}
+	defer adapter.Close(client, ctx, cancel)
+
+	filter := bson.M{"userId": userId, "year": year}
+
+	cursor, err := adapter.Query(client, ctx, transactionCollection, filter, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	mongoTransactions := []MongoTransaction{}
+	err = cursor.All(ctx, &mongoTransactions)
+	if err != nil {
+		return nil, err
+	}
+
+	transactions := make([]domain.Transaction, len(mongoTransactions))
+	for i, mongoTransaction := range mongoTransactions {
+		transactions[i] = mongoTransaction.ToDomain()
+	}
+
+	return transactions, nil
+}
+
 // CreateTransaction implements domain.TransactionRepository.
 func (m MongoTransactionRepository) CreateTransaction(transaction domain.Transaction) (domain.Transaction, error) {
 	adapter := m.adapter()
@@ -118,12 +226,7 @@ func (m MongoTransactionRepository) GetTransactionsForUser(userId string) ([]dom
 	}
 	defer adapter.Close(client, ctx, cancel)
 
-	mongoId, err := bson.ObjectIDFromHex(userId)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.M{"userId": mongoId}
+	filter := bson.M{"userId": userId}
 
 	cursor, err := adapter.Query(client, ctx, transactionCollection, filter, nil)
 	if err != nil {
