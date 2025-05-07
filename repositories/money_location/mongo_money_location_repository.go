@@ -69,7 +69,12 @@ func (m MongoMoneyLocationRepository) DeleteMoneyLocation(id string) error {
 	}
 	defer adapter.Close(client, ctx, cancel)
 
-	filter := bson.M{"_id": id}
+	objectId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
 
 	err = adapter.DeleteOne(client, ctx, moneyLocationCollection, filter)
 	if err != nil {
@@ -89,7 +94,12 @@ func (m MongoMoneyLocationRepository) GetMoneyLocation(id string) (domain.MoneyL
 	}
 	defer adapter.Close(client, ctx, cancel)
 
-	filter := bson.M{"_id": id}
+	objectId, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.MoneyLocation{}, err
+	}
+
+	filter := bson.M{"_id": objectId}
 
 	cursor, err := adapter.Query(client, ctx, moneyLocationCollection, filter, nil)
 	if err != nil {
