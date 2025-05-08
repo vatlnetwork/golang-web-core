@@ -10,8 +10,6 @@ import (
 
 const transactionGroupCollection string = "transactionGroups"
 
-var ErrorTransactionGroupNotFound error = errors.New("transaction group not found")
-
 type MongoTransactionGroupRepository struct {
 	connectionConfig mongo.Config
 	logTransactions  bool
@@ -105,7 +103,7 @@ func (m MongoTransactionGroupRepository) GetTransactionGroup(transactionGroupId 
 	}
 
 	if len(mongoTransactionGroups) == 0 {
-		return domain.TransactionGroup{}, ErrorTransactionGroupNotFound
+		return domain.TransactionGroup{}, errors.New(domain.ErrorTransactionGroupNotFound)
 	}
 
 	return mongoTransactionGroups[0].ToDomain(), nil

@@ -102,7 +102,7 @@ func (m MoneyLocationsController) Index(rw http.ResponseWriter, req *http.Reques
 	}
 }
 
-type createRequest struct {
+type moneyLocationCreateRequest struct {
 	Name string `json:"name"`
 }
 
@@ -113,7 +113,7 @@ func (m MoneyLocationsController) Create(rw http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	var request createRequest
+	var request moneyLocationCreateRequest
 	err = util.DecodeContextParams(req, &request)
 	if err != nil {
 		srverr.Handle400(rw, err)
