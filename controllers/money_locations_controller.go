@@ -14,12 +14,18 @@ import (
 type MoneyLocationsController struct {
 	moneyLocationRepo domain.MoneyLocationRepository
 	sessionManager    domain.SessionManager
+	transactionRepo   domain.TransactionRepository
 }
 
-func NewMoneyLocationsController(moneyLocationRepo domain.MoneyLocationRepository, sessionManager domain.SessionManager) MoneyLocationsController {
+func NewMoneyLocationsController(
+	moneyLocationRepo domain.MoneyLocationRepository,
+	sessionManager domain.SessionManager,
+	transactionRepo domain.TransactionRepository,
+) MoneyLocationsController {
 	return MoneyLocationsController{
 		moneyLocationRepo: moneyLocationRepo,
 		sessionManager:    sessionManager,
+		transactionRepo:   transactionRepo,
 	}
 }
 
@@ -220,6 +226,10 @@ func (m MoneyLocationsController) Update(rw http.ResponseWriter, req *http.Reque
 	}
 }
 
+type deleteRequest struct {
+	DeleteTransactions bool `json:"deleteTransactions"`
+}
+
 func (m MoneyLocationsController) Destroy(rw http.ResponseWriter, req *http.Request) {
 	currentUser, err := m.sessionManager.GetContextUser(req)
 	if err != nil {
@@ -240,6 +250,30 @@ func (m MoneyLocationsController) Destroy(rw http.ResponseWriter, req *http.Requ
 
 	if location.UserId != currentUser.Id {
 		srverr.Handle404(rw, errors.New(domain.ErrorMoneyLocationNotFound))
+		return
+	}
+
+	var request deleteRequest
+	err = util.DecodeContextParams(req, &request)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	transactions, err := m.transactionRepo.GetTransactionsByLocation(locationId)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	if len(transactions) > 0 && !request.DeleteTransactions {
+		srverr.Handle400(rw, errors.New("this location has transactions, set deleteTransactions to true to delete them"))
+		return
+	}
+
+	err = m.transactionRepo.DeleteTransactionsInLocation(locationId)
+	if err != nil {
+		srverr.Handle500(rw, err)
 		return
 	}
 
