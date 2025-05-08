@@ -14,15 +14,18 @@ import (
 type TransactionGroupsController struct {
 	transactionGroupRepo domain.TransactionGroupRepository
 	sessionManager       domain.SessionManager
+	transactionRepo      domain.TransactionRepository
 }
 
 func NewTransactionGroupsController(
 	transactionGroupRepo domain.TransactionGroupRepository,
 	sessionManager domain.SessionManager,
+	transactionRepo domain.TransactionRepository,
 ) TransactionGroupsController {
 	return TransactionGroupsController{
 		transactionGroupRepo: transactionGroupRepo,
 		sessionManager:       sessionManager,
+		transactionRepo:      transactionRepo,
 	}
 }
 
@@ -223,6 +226,10 @@ func (t TransactionGroupsController) Update(rw http.ResponseWriter, req *http.Re
 	}
 }
 
+type transactionGroupDeleteRequest struct {
+	DeleteTransactions bool `json:"deleteTransactions"`
+}
+
 func (t TransactionGroupsController) Destroy(rw http.ResponseWriter, req *http.Request) {
 	currentUser, err := t.sessionManager.GetContextUser(req)
 	if err != nil {
@@ -243,6 +250,30 @@ func (t TransactionGroupsController) Destroy(rw http.ResponseWriter, req *http.R
 
 	if transactionGroup.UserId != currentUser.Id {
 		srverr.Handle404(rw, errors.New("transaction group not found"))
+		return
+	}
+
+	transactions, err := t.transactionRepo.GetTransactionsByGroup(transactionGroupId)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	var request transactionGroupDeleteRequest
+	err = util.DecodeContextParams(req, &request)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	if len(transactions) > 0 && !request.DeleteTransactions {
+		srverr.Handle400(rw, errors.New("this group has transactions, set deleteTransactions to true to delete them"))
+		return
+	}
+
+	err = t.transactionRepo.DeleteTransactionsInGroup(transactionGroupId)
+	if err != nil {
+		srverr.Handle500(rw, err)
 		return
 	}
 
