@@ -10,8 +10,6 @@ import (
 
 const transactionCollection string = "transactions"
 
-var ErrorTransactionNotFound error = errors.New("transaction not found")
-
 type MongoTransactionRepository struct {
 	connectionConfig mongo.Config
 	logTransactions  bool
@@ -23,6 +21,21 @@ func NewMongoTransactionRepository(connectionConfig mongo.Config, logTransaction
 
 func (m MongoTransactionRepository) adapter() *mongo.Mongo {
 	return mongo.NewMongoAdapter(m.connectionConfig, m.logTransactions)
+}
+
+// DeleteTransactionsInGroup implements domain.TransactionRepository.
+func (m MongoTransactionRepository) DeleteTransactionsInGroup(groupId string) error {
+	adapter := m.adapter()
+
+	client, ctx, cancel, err := adapter.Connect()
+	if err != nil {
+		return err
+	}
+	defer adapter.Close(client, ctx, cancel)
+
+	filter := bson.M{"groupId": groupId}
+
+	return adapter.DeleteMany(client, ctx, transactionCollection, filter)
 }
 
 // DeleteTransactionsInLocation implements domain.TransactionRepository.
@@ -210,7 +223,7 @@ func (m MongoTransactionRepository) GetTransaction(transactionId string) (domain
 	}
 
 	if len(mongoTransactions) == 0 {
-		return domain.Transaction{}, ErrorTransactionNotFound
+		return domain.Transaction{}, errors.New(domain.ErrorTransactionNotFound)
 	}
 
 	return mongoTransactions[0].ToDomain(), nil
