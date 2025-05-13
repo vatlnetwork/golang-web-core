@@ -3,10 +3,10 @@ package mongo
 import "fmt"
 
 type Config struct {
-	Hostname string
-	Database string
-	Username string
-	Password string
+	Hostname string `json:"hostname"`
+	Database string `json:"database"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func (c Config) ConnectionString() string {
