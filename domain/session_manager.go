@@ -122,6 +122,11 @@ func (s SessionManager) HandleSignIn(req *http.Request, email, firstName, lastNa
 
 	for _, session := range sessions {
 		if session.Validate(remoteIP) {
+			user.LastSignIn = time.Now()
+			user, err = s.userRepository.UpdateUser(user)
+			if err != nil {
+				return Session{}, User{}, err
+			}
 			return session, user, nil
 		}
 	}
