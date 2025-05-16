@@ -66,21 +66,21 @@ func logRequest(req *http.Request) {
 
 	switch req.Method {
 	case http.MethodGet:
-		color = "0;0;255"
+		color = "0;0;255" // Blue
 	case http.MethodConnect:
-		color = "0;0;255"
+		color = "0;0;255" // Blue
 	case http.MethodOptions:
-		color = "0;0;255"
+		color = "0;0;255" // Blue
 	case http.MethodTrace:
-		color = "0;0;255"
+		color = "0;0;255" // Blue
 	case http.MethodPost:
-		color = "100;255;100"
+		color = "100;255;100" // Green
 	case http.MethodPatch:
-		color = "255;255;0"
+		color = "255;255;0" // Yellow
 	case http.MethodPut:
-		color = "255;255;0"
+		color = "255;255;0" // Yellow
 	case http.MethodDelete:
-		color = "255;0;0"
+		color = "255;0;0" // Red
 	}
 
 	requestID := req.Header.Get("X-Request-ID")
