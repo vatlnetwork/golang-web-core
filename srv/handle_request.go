@@ -9,21 +9,25 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func generateRequestID(length int) string {
 	rand.New(rand.NewSource(time.Now().UnixNano())) // Seed for randomness
-	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	result := make([]byte, length)
 	for i := 0; i < length; i++ {
 		result[i] = chars[rand.Intn(len(chars))]
 	}
-	return string(result)
+
+	resultString := strings.ToUpper(string(result))
+
+	return resultString
 }
 
 func SetRequestID(req *http.Request) {
-	requestId := generateRequestID(16)
+	requestId := generateRequestID(26)
 
 	req.Header.Set("X-Request-ID", requestId)
 }
