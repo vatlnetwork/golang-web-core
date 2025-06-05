@@ -106,6 +106,18 @@ func (t TransactionsController) Routes() []route.Route {
 			Handler:        t.Destroy,
 			ControllerName: t.Name(),
 		},
+		{
+			Pattern:        "/api/transactions/upload",
+			Method:         http.MethodPost,
+			Handler:        t.Upload,
+			ControllerName: t.Name(),
+		},
+		{
+			Pattern:        "/api/transactions/bulk_upload",
+			Method:         http.MethodPost,
+			Handler:        t.BulkUpload,
+			ControllerName: t.Name(),
+		},
 	}
 }
 
@@ -394,6 +406,91 @@ func (t TransactionsController) Destroy(rw http.ResponseWriter, req *http.Reques
 	}
 
 	rw.WriteHeader(http.StatusNoContent)
+}
+
+type uploadTransactionResponse struct {
+	OldId string `json:"oldId"`
+	NewId string `json:"newId"`
+}
+
+func (t TransactionsController) Upload(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := t.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	var transaction domain.Transaction
+	err = util.DecodeContextParams(req, &transaction)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	oldId := transaction.Id
+
+	transaction.Id = ""
+	transaction.UserId = currentUser.Id
+
+	transaction, err = t.transactionRepo.CreateTransaction(transaction)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	response := uploadTransactionResponse{
+		OldId: oldId,
+		NewId: transaction.Id,
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+}
+
+func (t TransactionsController) BulkUpload(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := t.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	var transactions []domain.Transaction
+	err = util.DecodeContextParams(req, &transactions)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	response := []uploadTransactionResponse{}
+
+	for _, transaction := range transactions {
+		oldId := transaction.Id
+
+		transaction.Id = ""
+		transaction.UserId = currentUser.Id
+
+		transaction, err = t.transactionRepo.CreateTransaction(transaction)
+		if err != nil {
+			srverr.Handle500(rw, err)
+			return
+		}
+
+		response = append(response, uploadTransactionResponse{
+			OldId: oldId,
+			NewId: transaction.Id,
+		})
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
 }
 
 var _ Controller = TransactionsController{}
