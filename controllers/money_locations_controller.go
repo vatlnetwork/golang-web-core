@@ -84,6 +84,18 @@ func (m MoneyLocationsController) Routes() []route.Route {
 			Handler:        m.Destroy,
 			ControllerName: m.Name(),
 		},
+		{
+			Pattern:        "/api/money_locations/upload",
+			Method:         http.MethodPost,
+			Handler:        m.UploadLocation,
+			ControllerName: m.Name(),
+		},
+		{
+			Pattern:        "/api/money_locations/bulk_upload",
+			Method:         http.MethodPost,
+			Handler:        m.BulkUploadLocations,
+			ControllerName: m.Name(),
+		},
 	}
 }
 
@@ -284,6 +296,91 @@ func (m MoneyLocationsController) Destroy(rw http.ResponseWriter, req *http.Requ
 	}
 
 	rw.WriteHeader(http.StatusNoContent)
+}
+
+type uploadLocationResponse struct {
+	OldId string `json:"oldId"`
+	NewId string `json:"newId"`
+}
+
+func (m MoneyLocationsController) UploadLocation(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := m.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	var location domain.MoneyLocation
+	err = util.DecodeContextParams(req, &location)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	oldId := location.Id
+
+	location.Id = ""
+	location.UserId = currentUser.Id
+
+	location, err = m.moneyLocationRepo.CreateMoneyLocation(location)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	response := uploadLocationResponse{
+		OldId: oldId,
+		NewId: location.Id,
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+}
+
+func (m MoneyLocationsController) BulkUploadLocations(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := m.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	var locations []domain.MoneyLocation
+	err = util.DecodeContextParams(req, &locations)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	response := []uploadLocationResponse{}
+
+	for _, location := range locations {
+		oldId := location.Id
+
+		location.Id = ""
+		location.UserId = currentUser.Id
+
+		location, err = m.moneyLocationRepo.CreateMoneyLocation(location)
+		if err != nil {
+			srverr.Handle500(rw, err)
+			return
+		}
+
+		response = append(response, uploadLocationResponse{
+			OldId: oldId,
+			NewId: location.Id,
+		})
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
 }
 
 var _ Controller = MoneyLocationsController{}
