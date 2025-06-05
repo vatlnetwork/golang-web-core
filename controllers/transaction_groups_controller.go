@@ -84,6 +84,18 @@ func (t TransactionGroupsController) Routes() []route.Route {
 			Handler:        t.Destroy,
 			ControllerName: t.Name(),
 		},
+		{
+			Pattern:        "/api/transaction_groups/upload",
+			Method:         http.MethodPost,
+			Handler:        t.Upload,
+			ControllerName: t.Name(),
+		},
+		{
+			Pattern:        "/api/transaction_groups/bulk_upload",
+			Method:         http.MethodPost,
+			Handler:        t.BulkUpload,
+			ControllerName: t.Name(),
+		},
 	}
 }
 
@@ -284,6 +296,91 @@ func (t TransactionGroupsController) Destroy(rw http.ResponseWriter, req *http.R
 	}
 
 	rw.WriteHeader(http.StatusNoContent)
+}
+
+type uploadTransactionGroupResponse struct {
+	OldId string `json:"oldId"`
+	NewId string `json:"newId"`
+}
+
+func (t TransactionGroupsController) Upload(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := t.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	var transactionGroup domain.TransactionGroup
+	err = util.DecodeContextParams(req, &transactionGroup)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	oldId := transactionGroup.Id
+
+	transactionGroup.Id = ""
+	transactionGroup.UserId = currentUser.Id
+
+	transactionGroup, err = t.transactionGroupRepo.CreateTransactionGroup(transactionGroup)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	response := uploadTransactionGroupResponse{
+		OldId: oldId,
+		NewId: transactionGroup.Id,
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+}
+
+func (t TransactionGroupsController) BulkUpload(rw http.ResponseWriter, req *http.Request) {
+	currentUser, err := t.sessionManager.GetContextUser(req)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
+
+	var transactionGroups []domain.TransactionGroup
+	err = util.DecodeContextParams(req, &transactionGroups)
+	if err != nil {
+		srverr.Handle400(rw, err)
+		return
+	}
+
+	response := []uploadTransactionGroupResponse{}
+
+	for _, transactionGroup := range transactionGroups {
+		oldId := transactionGroup.Id
+
+		transactionGroup.Id = ""
+		transactionGroup.UserId = currentUser.Id
+
+		transactionGroup, err = t.transactionGroupRepo.CreateTransactionGroup(transactionGroup)
+		if err != nil {
+			srverr.Handle500(rw, err)
+			return
+		}
+
+		response = append(response, uploadTransactionGroupResponse{
+			OldId: oldId,
+			NewId: transactionGroup.Id,
+		})
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		srverr.Handle500(rw, err)
+		return
+	}
 }
 
 var _ Controller = TransactionGroupsController{}
