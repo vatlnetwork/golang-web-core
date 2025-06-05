@@ -8,4 +8,5 @@ type TransactionGroupRepository interface {
 	GetTransactionGroup(transactionGroupId string) (TransactionGroup, error)
 	UpdateTransactionGroup(transactionGroup TransactionGroup) error
 	DeleteTransactionGroup(transactionGroupId string) error
+	DeleteAllTransactionGroupsForUser(userId string) error
 }

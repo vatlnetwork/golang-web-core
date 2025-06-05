@@ -8,4 +8,5 @@ type MoneyLocationRepository interface {
 	GetMoneyLocationsForUser(userId string) ([]MoneyLocation, error)
 	UpdateMoneyLocation(moneyLocation MoneyLocation) (MoneyLocation, error)
 	DeleteMoneyLocation(id string) error
+	DeleteAllMoneyLocationsForUser(userId string) error
 }

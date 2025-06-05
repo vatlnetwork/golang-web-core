@@ -157,6 +157,7 @@ func (c *ApplicationController) setupControllers() error {
 		NewTransactionGroupsController(c.transactionGroupRepo, c.sessionManager, c.transactionRepo),
 		NewAuthController(c.sessionManager),
 		NewMoneyLocationsController(c.moneyLocationRepo, c.sessionManager, c.transactionRepo),
+		NewSyncController(c.sessionManager, c.transactionRepo, c.moneyLocationRepo, c.transactionGroupRepo),
 	}
 
 	// everything below here should be left untouched

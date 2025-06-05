@@ -43,5 +43,8 @@ func (r Router) Routes(appController controllers.ApplicationController) []route.
 	moneyLocationsController := appController.GetController("MoneyLocationsController").(controllers.MoneyLocationsController)
 	routes = append(routes, moneyLocationsController.Routes()...)
 
+	syncController := appController.GetController("SyncController").(controllers.SyncController)
+	routes = append(routes, syncController.Routes()...)
+
 	return routes
 }

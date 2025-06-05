@@ -13,4 +13,5 @@ type TransactionRepository interface {
 	DeleteTransaction(transactionId string) error
 	DeleteTransactionsInLocation(locationId string) error
 	DeleteTransactionsInGroup(groupId string) error
+	DeleteAllTransactionsForUser(userId string) error
 }

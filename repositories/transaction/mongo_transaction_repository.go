@@ -23,6 +23,26 @@ func (m MongoTransactionRepository) adapter() *mongo.Mongo {
 	return mongo.NewMongoAdapter(m.connectionConfig, m.logTransactions)
 }
 
+// DeleteAllTransactionsForUser implements domain.TransactionRepository.
+func (m MongoTransactionRepository) DeleteAllTransactionsForUser(userId string) error {
+	adapter := m.adapter()
+
+	client, ctx, cancel, err := adapter.Connect()
+	if err != nil {
+		return err
+	}
+	defer adapter.Close(client, ctx, cancel)
+
+	filter := bson.M{"userId": userId}
+
+	err = adapter.DeleteMany(client, ctx, transactionCollection, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // DeleteTransactionsInGroup implements domain.TransactionRepository.
 func (m MongoTransactionRepository) DeleteTransactionsInGroup(groupId string) error {
 	adapter := m.adapter()

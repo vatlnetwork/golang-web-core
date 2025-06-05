@@ -29,6 +29,26 @@ func (m MongoMoneyLocationRepository) adapter() *mongo.Mongo {
 	return mongo.NewMongoAdapter(m.connectionConfig, m.logTransactions)
 }
 
+// DeleteAllMoneyLocationsForUser implements domain.MoneyLocationRepository.
+func (m MongoMoneyLocationRepository) DeleteAllMoneyLocationsForUser(userId string) error {
+	adapter := m.adapter()
+
+	client, ctx, cancel, err := adapter.Connect()
+	if err != nil {
+		return err
+	}
+	defer adapter.Close(client, ctx, cancel)
+
+	filter := bson.M{"userId": userId}
+
+	err = adapter.DeleteMany(client, ctx, moneyLocationCollection, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // CreateMoneyLocation implements domain.MoneyLocationRepository.
 func (m MongoMoneyLocationRepository) CreateMoneyLocation(moneyLocation domain.MoneyLocation) (domain.MoneyLocation, error) {
 	adapter := m.adapter()
