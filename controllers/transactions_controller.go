@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 type TransactionsController struct {
@@ -431,6 +432,7 @@ func (t TransactionsController) Upload(rw http.ResponseWriter, req *http.Request
 
 	transaction.Id = ""
 	transaction.UserId = currentUser.Id
+	transaction.Year = time.UnixMilli(transaction.Timestamp).Year()
 
 	transaction, err = t.transactionRepo.CreateTransaction(transaction)
 	if err != nil {
@@ -472,6 +474,7 @@ func (t TransactionsController) BulkUpload(rw http.ResponseWriter, req *http.Req
 
 		transaction.Id = ""
 		transaction.UserId = currentUser.Id
+		transaction.Year = time.UnixMilli(transaction.Timestamp).Year()
 
 		transaction, err = t.transactionRepo.CreateTransaction(transaction)
 		if err != nil {

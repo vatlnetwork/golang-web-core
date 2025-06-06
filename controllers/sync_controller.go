@@ -9,6 +9,7 @@ import (
 	"inventory-app/util"
 	"net/http"
 	"reflect"
+	"time"
 )
 
 type SyncController struct {
@@ -159,6 +160,7 @@ func (s SyncController) SyncMoney(rw http.ResponseWriter, req *http.Request) {
 	for i, transaction := range transactions {
 		transaction.Id = ""
 		transaction.UserId = currentUser.Id
+		transaction.Year = time.UnixMilli(transaction.Timestamp).Year()
 
 		transaction, err = s.transactionRepo.CreateTransaction(transaction)
 		if err != nil {
