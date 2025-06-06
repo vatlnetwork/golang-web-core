@@ -63,7 +63,7 @@ func (m Mongo) InsertOne(client *mongo.Client, ctx context.Context, col string, 
 	return res, err
 }
 
-func (m Mongo) InsertMany(client *mongo.Client, ctx context.Context, col string, docs []any) error {
+func (m Mongo) InsertMany(client *mongo.Client, ctx context.Context, col string, docs any) error {
 	collection := client.Database(m.Database).Collection(col)
 	res, err := collection.InsertMany(ctx, docs)
 	if m.LogTransactions {
@@ -76,7 +76,11 @@ func (m Mongo) Query(client *mongo.Client, ctx context.Context, col string, quer
 	collection := client.Database(m.Database).Collection(col)
 	result, err := collection.Find(ctx, query, options.Find().SetProjection(field))
 	if m.LogTransactions && result != nil {
-		util.LogColor("lightblue", "Queried %v documents from collection %v", result.RemainingBatchLength(), col)
+		if result.RemainingBatchLength() >= 100 {
+			util.LogColor("lightblue", "Queried 100+ documents from collection %v", col)
+		} else {
+			util.LogColor("lightblue", "Queried %v documents from collection %v", result.RemainingBatchLength(), col)
+		}
 	}
 	return result, err
 }
