@@ -1,20 +1,35 @@
 package mongo
 
-import "fmt"
+import (
+	"net/url"
+)
 
 type Config struct {
-	Hostname string `json:"hostname"`
-	Database string `json:"database"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Hostname   string `json:"hostname"`
+	Database   string `json:"database"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	AuthSource string `json:"authSource"`
 }
 
 func (c Config) ConnectionString() string {
-	authAndHost := c.Hostname
-	if c.UsingAuth() {
-		authAndHost = fmt.Sprintf("%v:%v@%v", c.Username, c.Password, c.Hostname)
+	uri := url.URL{
+		Scheme: "mongodb",
+		Host:   c.Hostname,
+		Path:   c.Database,
 	}
-	return fmt.Sprintf("mongodb://%v/%v", authAndHost, c.Database)
+
+	if c.UsingAuth() {
+		uri.User = url.UserPassword(c.Username, c.Password)
+	}
+
+	query := url.Values{}
+	if c.AuthSource != "" {
+		query.Add("authSource", c.AuthSource)
+	}
+	uri.RawQuery = query.Encode()
+
+	return uri.String()
 }
 
 func (c Config) IsEnabled() bool {
