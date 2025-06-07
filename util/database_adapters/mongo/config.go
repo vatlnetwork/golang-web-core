@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"fmt"
 	"net/url"
 )
 
@@ -21,6 +22,8 @@ func (c Config) ConnectionString() string {
 	if c.UsingAuth() {
 		uri.User = url.UserPassword(c.Username, c.Password)
 	}
+
+	fmt.Println(uri.String())
 
 	return uri.String()
 }
