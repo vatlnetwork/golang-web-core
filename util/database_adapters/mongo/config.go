@@ -1,15 +1,15 @@
 package mongo
 
 import (
-	"fmt"
 	"net/url"
 )
 
 type Config struct {
-	Hostname string `json:"hostname"`
-	Database string `json:"database"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Hostname   string `json:"hostname"`
+	Database   string `json:"database"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	AuthSource string `json:"authSource"`
 }
 
 func (c Config) ConnectionString() string {
@@ -23,7 +23,11 @@ func (c Config) ConnectionString() string {
 		uri.User = url.UserPassword(c.Username, c.Password)
 	}
 
-	fmt.Println(uri.String())
+	query := url.Values{}
+	if c.AuthSource != "" {
+		query.Add("authSource", c.AuthSource)
+	}
+	uri.RawQuery = query.Encode()
 
 	return uri.String()
 }
