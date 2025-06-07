@@ -13,8 +13,8 @@ type MongoTransaction struct {
 	Amount          float64       `bson:"amount"`
 	Timestamp       int64         `bson:"timestamp"`
 	Year            int           `bson:"year"`
-	Description     string        `bson:"description,omitempty"`
-	GroupId         string        `bson:"groupId,omitempty"`
+	Description     string        `bson:"description"`
+	GroupId         string        `bson:"groupId"`
 	MoneyLocationId string        `bson:"moneyLocationId"`
 }
 
