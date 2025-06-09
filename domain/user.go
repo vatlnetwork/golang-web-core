@@ -8,6 +8,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const ErrorUserNotFound string = "user not found"
+const ErrorUserAlreadyExists string = "user already exists"
+
+type UserRepository interface {
+	CreateUser(user User) (User, error)
+	GetUser(userId string) (User, error)
+	GetUserByEmail(email string) (User, error)
+	UpdateUser(user User) (User, error)
+	DeleteUser(userId string) error
+}
+
 const emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
 const minPasswordLength = 6
 const maxPasswordLength = 128

@@ -2,6 +2,17 @@ package domain
 
 import "errors"
 
+const ErrorTransactionGroupNotFound string = "transaction group not found"
+
+type TransactionGroupRepository interface {
+	CreateTransactionGroup(transactionGroup TransactionGroup) (TransactionGroup, error)
+	GetTransactionGroupsForUser(userId string) ([]TransactionGroup, error)
+	GetTransactionGroup(transactionGroupId string) (TransactionGroup, error)
+	UpdateTransactionGroup(transactionGroup TransactionGroup) error
+	DeleteTransactionGroup(transactionGroupId string) error
+	DeleteAllTransactionGroupsForUser(userId string) error
+}
+
 type TransactionGroup struct {
 	Id          string `json:"id"`
 	UserId      string `json:"userId"`
