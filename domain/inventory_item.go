@@ -3,12 +3,13 @@ package domain
 import "errors"
 
 type InventoryItem struct {
-	Id           string           `json:"id"`
-	UserId       string           `json:"userId"`
-	Description  string           `json:"description"`
-	Locations    map[string]int64 `json:"locations"`
-	InitialValue float64          `json:"initialValue"`
-	Value        float64          `json:"value"`
+	Id          string `json:"id"`
+	UserId      string `json:"userId"`
+	Description string `json:"description"`
+	// quantity in location
+	Locations    map[string]int64 `json:"locations"`    // locationId -> quantity
+	InitialValue float64          `json:"initialValue"` // initial value of the item
+	Value        float64          `json:"value"`        // current value of the item
 }
 
 func NewInventoryItem(userId, description string, initialValue float64) (InventoryItem, error) {
@@ -27,6 +28,7 @@ func NewInventoryItem(userId, description string, initialValue float64) (Invento
 	return InventoryItem{
 		UserId:       userId,
 		Description:  description,
+		Locations:    map[string]int64{},
 		InitialValue: initialValue,
 		Value:        initialValue,
 	}, nil
