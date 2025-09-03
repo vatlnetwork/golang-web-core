@@ -3,6 +3,7 @@ package logging
 import (
 	"fmt"
 	"log"
+	"os"
 )
 
 type LogLevel string
@@ -23,6 +24,12 @@ func NewLogger() Logger {
 }
 
 func (l Logger) Log(logLevel LogLevel, message string) {
+	if logLevel == LogLevelDebug {
+		if os.Getenv("DEBUG_LOGGING") == "false" {
+			return
+		}
+	}
+
 	if l.ServiceName == "" {
 		log.Print("No service name set for logger")
 		return

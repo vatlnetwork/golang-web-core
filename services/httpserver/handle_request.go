@@ -40,7 +40,7 @@ func (h *HttpServer) handleRequest(route Route) http.HandlerFunc {
 
 		params, err := h.getParams(req)
 		if err == nil {
-			h.logger.Infof("Params: %+v", params)
+			h.logger.Debugf("Params: %+v", params)
 		}
 		if params == nil {
 			params = map[string]any{}
