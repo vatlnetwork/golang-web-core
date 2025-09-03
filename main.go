@@ -1,29 +1,33 @@
 package main
 
 import (
-	"golang-web-core/srv"
-	"golang-web-core/srv/cfg"
-	"golang-web-core/util"
+	"golang-web-core/controllers"
+	"golang-web-core/logging"
+	"golang-web-core/routes"
+	"golang-web-core/service"
+	"golang-web-core/services/httpserver"
+	"golang-web-core/terminal"
 )
 
 func main() {
-	file := "default"
-	_, cfgFlag := cfg.GetArg("--config")
-	if cfgFlag != "" {
-		file = cfgFlag
-	}
-
-	cfg, err := cfg.FromFile(file)
+	config, err := httpserver.ConfigFromJson("configs/config.json")
 	if err != nil {
-		util.LogFatal(err)
+		panic(err)
 	}
 
-	srv, err := srv.NewServer(cfg)
+	logger := logging.NewLogger()
+	applicationController := controllers.NewApplicationController(&logger)
+
+	routes, err := routes.Routes(nil, applicationController)
 	if err != nil {
-		util.LogFatal(err)
+		panic(err)
 	}
 
-	if err := srv.Start(); err != nil {
-		util.LogFatal(err)
+	httpServer, err := httpserver.NewHttpServer(config, routes, "http-server", &logger)
+	if err != nil {
+		panic(err)
 	}
+
+	terminal := terminal.NewTerminal([]service.Service{httpServer})
+	terminal.Start()
 }
