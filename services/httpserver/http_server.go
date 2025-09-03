@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
-	"net/http"
 	"golang-web-core/logging"
 	"golang-web-core/service"
+	"net"
+	"net/http"
 	"time"
 )
 
@@ -160,6 +160,7 @@ func (h *HttpServer) preRun() {
 	h.mux = *http.NewServeMux()
 	h.logger.Debug("Registering routes")
 	h.RegisterRoutes()
+	h.logger.Infof("Registered %v routes", len(h.routes))
 	h.logger.Debug("Building server")
 	h.server = &http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Port),
