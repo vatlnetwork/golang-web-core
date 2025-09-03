@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	config, err := httpserver.ConfigFromJson("configs/config.json")
+	config, err := httpserver.ConfigFromJson("configs/http-server-config.json")
 	if err != nil {
 		panic(err)
 	}
