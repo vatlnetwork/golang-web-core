@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	Name string    `json:"name"`
 	Port int       `json:"port"`
 	SSL  SSLConfig `json:"ssl"`
 }
@@ -18,6 +19,10 @@ func (c *Config) SSLEnabled() bool {
 func (c Config) Verify() error {
 	if c.Port <= 0 {
 		return errors.New("port must be greater than 0")
+	}
+
+	if c.Name == "" {
+		return errors.New("name is required")
 	}
 
 	return nil

@@ -18,10 +18,9 @@ type HttpServer struct {
 	logger *logging.Logger
 	status service.ServiceStatus
 	mux    http.ServeMux
-	name   string
 }
 
-func NewHttpServer(config Config, routes []Route, name string, logger *logging.Logger) (*HttpServer, error) {
+func NewHttpServer(config Config, routes []Route, logger *logging.Logger) (*HttpServer, error) {
 	if logger == nil {
 		return nil, errors.New("logger is required")
 	}
@@ -31,7 +30,7 @@ func NewHttpServer(config Config, routes []Route, name string, logger *logging.L
 		return nil, err
 	}
 
-	if name == "" {
+	if config.Name == "" {
 		return nil, errors.New("name is required")
 	}
 
@@ -39,11 +38,10 @@ func NewHttpServer(config Config, routes []Route, name string, logger *logging.L
 		config: config,
 		routes: routes,
 		status: service.ServiceStatusStopped,
-		name:   name,
 		logger: logger,
 	}
 
-	srv.logger.ServiceName = name
+	srv.logger.ServiceName = config.Name
 
 	return &srv, nil
 }
@@ -55,7 +53,7 @@ func (h *HttpServer) setStatus(status service.ServiceStatus) {
 
 // Name implements service.Service.
 func (h *HttpServer) Name() string {
-	return h.name
+	return h.config.Name
 }
 
 func (h *HttpServer) canRestart() bool {
