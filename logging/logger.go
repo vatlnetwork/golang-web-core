@@ -31,15 +31,15 @@ func (l Logger) Log(logLevel LogLevel, message string) {
 		}
 	}
 
+	if l.ServiceName == "" {
+		log.Print("No service name set for logger")
+		return
+	}
+
 	numSpacesToAdd := 7 - len(logLevel)
 	spaces := ""
 	if numSpacesToAdd > 0 {
 		spaces = strings.Repeat(" ", numSpacesToAdd)
-	}
-
-	if l.ServiceName == "" {
-		log.Print("No service name set for logger")
-		return
 	}
 
 	color := ""
