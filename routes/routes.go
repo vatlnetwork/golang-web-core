@@ -1,14 +1,18 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
-	"net/http"
-	"golang-web-core/controllers"
 	"golang-web-core/services/httpserver"
+	"net/http"
 	"slices"
 )
 
-func Routes(controllers []controllers.Controller, applicationController controllers.ApplicationController) ([]httpserver.Route, error) {
+func Routes(controllers []httpserver.Controller, applicationController httpserver.Controller) ([]httpserver.Route, error) {
+	if applicationController == nil {
+		return nil, errors.New("application controller is required")
+	}
+
 	routes := []httpserver.Route{}
 
 	for _, route := range applicationController.Routes() {

@@ -16,7 +16,10 @@ func main() {
 	}
 
 	logger := logging.NewLogger()
-	applicationController := controllers.NewApplicationController(&logger)
+	applicationController, err := controllers.NewApplicationController(&logger)
+	if err != nil {
+		panic(err)
+	}
 
 	routes, err := routes.Routes(nil, applicationController)
 	if err != nil {
