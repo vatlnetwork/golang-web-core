@@ -23,7 +23,7 @@ func main() {
 		panic(err)
 	}
 
-	httpServer, err := httpserver.NewHttpServer(config, routes, "http-server", &logger)
+	httpServer, err := httpserver.NewHttpServer(config, routes, &logger)
 	if err != nil {
 		panic(err)
 	}
