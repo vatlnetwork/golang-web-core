@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 type LogLevel string
@@ -30,6 +31,12 @@ func (l Logger) Log(logLevel LogLevel, message string) {
 		}
 	}
 
+	numSpacesToAdd := 7 - len(logLevel)
+	spaces := ""
+	if numSpacesToAdd > 0 {
+		spaces = strings.Repeat(" ", numSpacesToAdd)
+	}
+
 	if l.ServiceName == "" {
 		log.Print("No service name set for logger")
 		return
@@ -54,7 +61,7 @@ func (l Logger) Log(logLevel LogLevel, message string) {
 		logLvlString = fmt.Sprintf("%v", logLevel)
 	}
 
-	log.Printf("%v - %v - %v", logLvlString, svcName, message)
+	log.Printf("%v%v - %v - %v", logLvlString, spaces, svcName, message)
 }
 
 func (l Logger) Info(message string) {
