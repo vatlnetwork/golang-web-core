@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"golang-web-core/controllers"
 	"golang-web-core/logging"
 	"golang-web-core/routes"
@@ -10,23 +11,31 @@ import (
 )
 
 func main() {
-	config, err := httpserver.ConfigFromJson("configs/http-server-config.json")
+	httpServerConfigPath := flag.String("http-server-config", "configs/http-server-config.json", "The path to the http server config file")
+	flag.Parse()
+
+	httpServerConfig, err := httpserver.ConfigFromJson(*httpServerConfigPath)
 	if err != nil {
 		panic(err)
 	}
 
 	logger := logging.NewLogger()
-	applicationController, err := controllers.NewApplicationController(&logger)
+	errorHandler, err := httpserver.NewHttpErrorHandler(&logger)
 	if err != nil {
 		panic(err)
 	}
 
-	routes, err := routes.Routes(nil, applicationController)
+	applicationController, controllers, err := controllers.SetupControllers(&errorHandler)
 	if err != nil {
 		panic(err)
 	}
 
-	httpServer, err := httpserver.NewHttpServer(config, routes, &logger)
+	routes, err := routes.Routes(controllers, applicationController)
+	if err != nil {
+		panic(err)
+	}
+
+	httpServer, err := httpserver.NewHttpServer(httpServerConfig, routes, &logger)
 	if err != nil {
 		panic(err)
 	}

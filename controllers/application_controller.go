@@ -2,22 +2,21 @@ package controllers
 
 import (
 	"errors"
-	"golang-web-core/logging"
 	"golang-web-core/services/httpserver"
 	"net/http"
 )
 
 type ApplicationController struct {
-	logger *logging.Logger
+	errorHandler *httpserver.HttpErrorHandler
 }
 
-func NewApplicationController(logger *logging.Logger) (ApplicationController, error) {
-	if logger == nil {
-		return ApplicationController{}, errors.New("logger is required")
+func NewApplicationController(errorHandler *httpserver.HttpErrorHandler) (ApplicationController, error) {
+	if errorHandler == nil {
+		return ApplicationController{}, errors.New("error handler is required")
 	}
 
 	return ApplicationController{
-		logger: logger,
+		errorHandler: errorHandler,
 	}, nil
 }
 
