@@ -97,7 +97,7 @@ func (c Collection) FindOne(filter any, result any) error {
 		return err
 	}
 
-	c.logger.Debugf("Found %v document in collection %v", result, c.col.Name())
+	c.logger.Debugf("Found 1 document in collection %v", c.col.Name())
 
 	return nil
 }
