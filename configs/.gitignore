@@ -1,3 +1,4 @@
 *
 !.gitignore
 !http-server-config.json
+!config.json

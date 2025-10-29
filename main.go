@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"golang-web-core/config"
 	"golang-web-core/controllers"
 	"golang-web-core/logging"
+	"golang-web-core/repositories"
 	"golang-web-core/routes"
 	"golang-web-core/service"
 	"golang-web-core/services/httpserver"
@@ -12,9 +14,15 @@ import (
 
 func main() {
 	httpServerConfigPath := flag.String("http-server-config", "configs/http-server-config.json", "The path to the http server config file")
+	configPath := flag.String("config", "configs/config.json", "The path to the config file")
 	flag.Parse()
 
 	httpServerConfig, err := httpserver.ConfigFromJson(*httpServerConfigPath)
+	if err != nil {
+		panic(err)
+	}
+
+	config, err := config.ConfigFromJson(*configPath)
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +33,12 @@ func main() {
 		panic(err)
 	}
 
-	applicationController, controllers, err := controllers.SetupControllers(&errorHandler)
+	repositories, err := repositories.SetupRepositories(config, &logger)
+	if err != nil {
+		panic(err)
+	}
+
+	applicationController, controllers, err := controllers.SetupControllers(repositories, &errorHandler)
 	if err != nil {
 		panic(err)
 	}

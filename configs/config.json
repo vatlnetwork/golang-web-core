@@ -1,0 +1,24 @@
+{
+  "sessionRepository": {
+    "type": "MongoSessionRepository",
+    "config": {
+      "mongoConfig": {
+        "hostname": "localhost:27017",
+        "database": "golangWebCore",
+        "timeoutSeconds": 30
+      },
+      "collection": "sessions"
+    }
+  },
+  "userRepository": {
+    "type": "MongoUserRepository",
+    "config": {
+      "mongoConfig": {
+        "hostname": "localhost:27017",
+        "database": "golangWebCore",
+        "timeoutSeconds": 30
+      },
+      "collection": "users"
+    }
+  }
+}
