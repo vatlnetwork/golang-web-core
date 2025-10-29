@@ -5,7 +5,6 @@ import (
 	"golang-web-core/domain"
 	"golang-web-core/services/httpserver"
 	"net/http"
-	"strings"
 )
 
 type ApplicationController struct {
@@ -27,13 +26,6 @@ func NewApplicationController(errorHandler *httpserver.HttpErrorHandler, session
 // BeforeAction implements httpserver.Controller.
 func (a ApplicationController) BeforeAction(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// this skips checking auth for files to prevent tons of requests to the database
-		// if you have an api endpoint with a . here that needs auth we will have to manually handle it
-		if strings.Contains(r.URL.Path, ".") {
-			handler(w, r)
-			return
-		}
-
 		currentSession, currentUser, err := a.sessionManager.GetCurrentSession(r)
 		if err != nil {
 			a.errorHandler.HandleError(http.StatusInternalServerError, w, err)
