@@ -33,6 +33,14 @@ func NewMongoSessionRepository(config MongoSessionRepoConfig, logger *logging.Lo
 		return MongoSessionRepository{}, fmt.Errorf("failed to create mongodb adapter: %w", err)
 	}
 
+	connectionError := errors.New("connection not tested yet")
+	for connectionError != nil {
+		connectionError = adapter.TestConnection()
+		if connectionError != nil {
+			logger.Errorf("failed to connect to mongodb: %v", connectionError)
+		}
+	}
+
 	return MongoSessionRepository{
 		config:  config,
 		logger:  logger,

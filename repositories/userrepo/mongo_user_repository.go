@@ -34,6 +34,14 @@ func NewMongoUserRepository(config MongoUserRepoConfig, logger *logging.Logger) 
 		return MongoUserRepository{}, fmt.Errorf("failed to create mongodb adapter: %w", err)
 	}
 
+	connectionError := errors.New("connection not tested yet")
+	for connectionError != nil {
+		connectionError = adapter.TestConnection()
+		if connectionError != nil {
+			logger.Errorf("failed to connect to mongodb: %v", connectionError)
+		}
+	}
+
 	return MongoUserRepository{
 		config:  config,
 		logger:  logger,
