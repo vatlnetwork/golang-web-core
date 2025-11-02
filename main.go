@@ -28,6 +28,7 @@ func main() {
 	}
 
 	logger := logging.NewLogger()
+	logger.ServiceName = "Main"
 	errorHandler, err := httpserver.NewHttpErrorHandler(&logger)
 	if err != nil {
 		panic(err)
