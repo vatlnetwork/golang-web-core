@@ -31,7 +31,7 @@ type User struct {
 	Email             string    `json:"email"`
 	FirstName         string    `json:"firstName"`
 	LastName          string    `json:"lastName"`
-	EncryptedPassword string    `json:"encryptedPassword"`
+	EncryptedPassword string    `json:"-"`
 	CreatedAt         time.Time `json:"createdAt"`
 	UpdatedAt         time.Time `json:"updatedAt"`
 	LastSignIn        time.Time `json:"lastSignIn"`
@@ -68,4 +68,23 @@ func NewUser(email, firstName, lastName, password string) (User, error) {
 
 func (u User) CheckPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(password))
+}
+
+func (u *User) UpdatePassword(password, passwordConfirmation string) error {
+	if password != passwordConfirmation {
+		return errors.New("passwords do not match")
+	}
+
+	if len(password) < minPasswordLength || len(password) > maxPasswordLength {
+		return errors.New(ErrorInvalidPassword)
+	}
+
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	u.EncryptedPassword = string(encryptedPassword)
+
+	return nil
 }
