@@ -10,6 +10,7 @@ import (
 	"slices"
 	"sync"
 	"syscall"
+	"time"
 )
 
 type Terminal struct {
@@ -76,14 +77,30 @@ func (t *Terminal) catchSignals() {
 func (t *Terminal) startTerminal() {
 	reader := bufio.NewReader(os.Stdin)
 
+	var terminalError error
+
 	for {
 		if t.shutdown {
 			break
 		}
 
 		fmt.Print("> ")
-		command, _ := reader.ReadString('\n')
+		var command string
+		command, terminalError = reader.ReadString('\n')
+		if terminalError != nil {
+			t.logger.Errorf("Error creating command reader: %v, falling back to zero-input system", terminalError)
+			break
+		}
 		t.processCommand(command)
+	}
+
+	if terminalError != nil {
+		for {
+			if t.shutdown {
+				break
+			}
+			time.Sleep(1 * time.Second)
+		}
 	}
 
 	t.logger.Info("Terminal shutdown")
