@@ -15,7 +15,7 @@ type Repositories struct {
 	UserRepository    domain.UserRepository
 }
 
-func SetupRepositories(config config.Config, logger *logging.Logger) (Repositories, error) {
+func SetupRepositories(config config.Config, secrets config.Secrets, logger *logging.Logger) (Repositories, error) {
 	repositories := Repositories{}
 
 	var sessionRepository domain.SessionRepository
@@ -26,6 +26,8 @@ func SetupRepositories(config config.Config, logger *logging.Logger) (Repositori
 		if err != nil {
 			return Repositories{}, err
 		}
+		mongoSessionRepoConfig.MongoConfig.Username = secrets.MongoDatabaseUsername
+		mongoSessionRepoConfig.MongoConfig.Password = secrets.MongoDatabasePassword
 		mongoSessionRepository, err := sessionrepo.NewMongoSessionRepository(mongoSessionRepoConfig, logger)
 		if err != nil {
 			return Repositories{}, err
@@ -44,6 +46,8 @@ func SetupRepositories(config config.Config, logger *logging.Logger) (Repositori
 		if err != nil {
 			return Repositories{}, err
 		}
+		mongoUserRepoConfig.MongoConfig.Username = secrets.MongoDatabaseUsername
+		mongoUserRepoConfig.MongoConfig.Password = secrets.MongoDatabasePassword
 		mongoUserRepository, err := userrepo.NewMongoUserRepository(mongoUserRepoConfig, logger)
 		if err != nil {
 			return Repositories{}, err

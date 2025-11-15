@@ -5,6 +5,7 @@
       "mongoConfig": {
         "hostname": "localhost:27017",
         "database": "golangWebCore",
+        "authSource": "admin",
         "timeoutSeconds": 10
       },
       "collection": "sessions"
@@ -16,6 +17,7 @@
       "mongoConfig": {
         "hostname": "localhost:27017",
         "database": "golangWebCore",
+        "authSource": "admin",
         "timeoutSeconds": 10
       },
       "collection": "users"

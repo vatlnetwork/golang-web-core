@@ -15,6 +15,7 @@ import (
 func main() {
 	httpServerConfigPath := flag.String("http-server-config", "configs/http-server-config.json", "The path to the http server config file")
 	configPath := flag.String("config", "configs/config.json", "The path to the config file")
+	secretsPath := flag.String("secrets", "secrets/secrets.json", "The path to the secrets file")
 	flag.Parse()
 
 	httpServerConfig, err := httpserver.ConfigFromJson(*httpServerConfigPath)
@@ -22,7 +23,12 @@ func main() {
 		panic(err)
 	}
 
-	config, err := config.ConfigFromJson(*configPath)
+	cfg, err := config.ConfigFromJson(*configPath)
+	if err != nil {
+		panic(err)
+	}
+
+	secrets, err := config.SecretsFromJson(*secretsPath)
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +40,7 @@ func main() {
 		panic(err)
 	}
 
-	repositories, err := repositories.SetupRepositories(config, &logger)
+	repositories, err := repositories.SetupRepositories(cfg, secrets, &logger)
 	if err != nil {
 		panic(err)
 	}
