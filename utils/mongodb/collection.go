@@ -2,10 +2,11 @@ package mongodb
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"fmt"
 	"golang-web-core/logging"
 
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -59,7 +60,7 @@ func (c Collection) DeleteOne(filter any) error {
 func (c Collection) Find(filter any, result any) error {
 	cursor, err := c.col.Find(c.ctx, filter)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to find documents: %w", err)
 	}
 
 	defer cursor.Close(c.ctx)
@@ -67,19 +68,19 @@ func (c Collection) Find(filter any, result any) error {
 	results := []map[string]any{}
 	err = cursor.All(c.ctx, &results)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to decode results: %w", err)
 	}
 
 	c.logger.Debugf("Found %v documents in collection %v", len(results), c.col.Name())
 
-	bytes, err := json.Marshal(results)
+	typ, bytes, err := bson.MarshalValue(results)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to marshal results: %w", err)
 	}
 
-	err = json.Unmarshal(bytes, result)
+	err = bson.UnmarshalValue(typ, bytes, result)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to unmarshal results: %w", err)
 	}
 
 	return nil
