@@ -65,7 +65,7 @@ func (c Collection) Find(filter any, result any) error {
 	defer cursor.Close(c.ctx)
 
 	results := []map[string]any{}
-	err = cursor.All(c.ctx, result)
+	err = cursor.All(c.ctx, &results)
 	if err != nil {
 		return err
 	}
