@@ -88,7 +88,7 @@ func (t *Terminal) startTerminal() {
 		var command string
 		command, terminalError = reader.ReadString('\n')
 		if terminalError != nil {
-			t.logger.Errorf("Error creating command reader: %v, falling back to zero-input system", terminalError)
+			t.logger.Warningf("Error creating command reader: %v, falling back to zero-input system", terminalError)
 			break
 		}
 		t.processCommand(command)
