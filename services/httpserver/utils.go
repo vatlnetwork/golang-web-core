@@ -6,7 +6,7 @@ import (
 )
 
 func DecodeContextParams(req *http.Request, object any) error {
-	params := GetParamsFromContext(req)
+	params := GetContextParams(req)
 
 	paramsJson, err := json.Marshal(params)
 	if err != nil {
@@ -21,6 +21,16 @@ func DecodeContextParams(req *http.Request, object any) error {
 	return nil
 }
 
-func GetParamsFromContext(req *http.Request) map[string]any {
-	return req.Context().Value(paramsKey).(map[string]any)
+func GetContextParams(req *http.Request) map[string]any {
+	params := req.Context().Value(paramsKey)
+	if params == nil {
+		return map[string]any{}
+	}
+
+	paramsMap, ok := params.(map[string]any)
+	if !ok {
+		return map[string]any{}
+	}
+
+	return paramsMap
 }
