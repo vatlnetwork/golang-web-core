@@ -15,5 +15,7 @@ func SetupControllers(errorHandler *httpserver.HttpErrorHandler) (httpserver.Con
 		return nil, nil, err
 	}
 
-	return applicationController, []httpserver.Controller{}, nil
+	htmlController := NewHTMLController()
+
+	return applicationController, []httpserver.Controller{htmlController}, nil
 }
