@@ -27,5 +27,8 @@ func SetupControllers(repositories repositories.Repositories, errorHandler *http
 	}
 	controllers = append(controllers, authController)
 
+	htmlController := NewHTMLController()
+	controllers = append(controllers, htmlController)
+
 	return applicationController, controllers, nil
 }
