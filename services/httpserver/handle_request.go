@@ -3,6 +3,7 @@ package httpserver
 import (
 	"context"
 	"encoding/json"
+	"golang-web-core/utils/httputils"
 	"io"
 	"net/http"
 
@@ -29,11 +30,8 @@ func (h *HttpServer) handleRequest(route Route) http.HandlerFunc {
 		requestId := uuid.NewString()
 		req.Header.Set("X-Request-ID", requestId)
 
-		remoteAddr := req.Header.Get("X-Forwarded-For")
-		if remoteAddr == "" {
-			remoteAddr = req.Header.Get("X-Real-IP")
-		}
-		if remoteAddr == "" {
+		remoteAddr, err := httputils.GetRealIP(req)
+		if err != nil {
 			remoteAddr = req.RemoteAddr
 		}
 		h.logger.Infof("Started %v %v for %v", req.Method, req.URL.Path, remoteAddr)

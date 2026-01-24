@@ -21,9 +21,10 @@ type Session struct {
 	ExpiresAt time.Time `json:"expiresAt"`
 	Expires   bool      `json:"expires"`
 	RemoteIP  string    `json:"remoteIP"`
+	UserAgent string    `json:"userAgent"`
 }
 
-func NewSession(userId, remoteIP string) (Session, error) {
+func NewSession(userId, remoteIP, userAgent string) (Session, error) {
 	if userId == "" {
 		return Session{}, errors.New("user id is required")
 	}
@@ -32,9 +33,14 @@ func NewSession(userId, remoteIP string) (Session, error) {
 		return Session{}, errors.New("remote ip is required")
 	}
 
+	if userAgent == "" {
+		return Session{}, errors.New("user agent is required")
+	}
+
 	return Session{
 		UserId:    userId,
 		RemoteIP:  remoteIP,
+		UserAgent: userAgent,
 		ExpiresAt: time.Now().Add(time.Hour * 24 * 30),
 		Expires:   true,
 	}, nil

@@ -3,7 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
-	"net"
+	"golang-web-core/utils/httputils"
 	"net/http"
 	"time"
 )
@@ -65,7 +65,7 @@ func (s SessionManager) GetCurrentSession(req *http.Request) (*Session, User, er
 		return nil, User{}, err
 	}
 
-	remoteIP, _, err := net.SplitHostPort(req.RemoteAddr)
+	remoteIP, err := httputils.GetRealIP(req)
 	if err != nil {
 		return nil, User{}, err
 	}
@@ -115,7 +115,7 @@ func (s SessionManager) HandleSignIn(req *http.Request, email, firstName, lastNa
 		return Session{}, User{}, err
 	}
 
-	remoteIP, _, err := net.SplitHostPort(req.RemoteAddr)
+	remoteIP, err := httputils.GetRealIP(req)
 	if err != nil {
 		return Session{}, User{}, err
 	}
@@ -131,7 +131,9 @@ func (s SessionManager) HandleSignIn(req *http.Request, email, firstName, lastNa
 		}
 	}
 
-	newSession, err := NewSession(user.Id, remoteIP)
+	userAgent := httputils.GetUserAgent(req)
+
+	newSession, err := NewSession(user.Id, remoteIP, userAgent)
 	if err != nil {
 		return Session{}, User{}, err
 	}

@@ -14,6 +14,7 @@ type MongoSession struct {
 	ExpiresAt time.Time     `bson:"expiresAt"`
 	Expires   bool          `bson:"expires"`
 	RemoteIP  string        `bson:"remoteIP"`
+	UserAgent string        `bson:"userAgent"`
 }
 
 func (s MongoSession) ToDomain() domain.Session {
@@ -23,6 +24,7 @@ func (s MongoSession) ToDomain() domain.Session {
 		ExpiresAt: s.ExpiresAt,
 		Expires:   s.Expires,
 		RemoteIP:  s.RemoteIP,
+		UserAgent: s.UserAgent,
 	}
 }
 
@@ -32,6 +34,7 @@ func MongoSessionFromDomain(session domain.Session) (MongoSession, error) {
 		ExpiresAt: session.ExpiresAt,
 		Expires:   session.Expires,
 		RemoteIP:  session.RemoteIP,
+		UserAgent: session.UserAgent,
 	}
 
 	if session.Id != "" {
