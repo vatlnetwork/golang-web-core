@@ -124,6 +124,11 @@ func (a AuthController) LocalLogin(w http.ResponseWriter, r *http.Request) {
 		Value: session.Id,
 		Path:  "/",
 	}
+	if !session.Expires {
+		expiresAt := time.Now().Add(30 * 24 * time.Hour)
+		cookie.Expires = expiresAt
+		cookie.MaxAge = int(time.Until(expiresAt).Seconds())
+	}
 	http.SetCookie(w, cookie)
 
 	response := localLoginResponse{
